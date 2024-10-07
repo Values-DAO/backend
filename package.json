@@ -1,5 +1,5 @@
 {
-  "name": "values-dao",
+  "name": "values-dao-backend",
   "version": "0.3.0",
   "private": true,
   "scripts": {
