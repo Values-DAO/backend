@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     const createUserResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_HOST}/api/users`,
+      `${process.env.NEXT_PUBLIC_HOST}/users`,
       {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
     logger.info("Generating user values", {requestId, fid});
     const generateValuesResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_HOST}/api/generate/values`,
+      `${process.env.NEXT_PUBLIC_HOST}/generate/values`,
       {
         method: "POST",
         headers: {"Content-Type": "application/json"},

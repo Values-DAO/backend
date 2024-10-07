@@ -285,7 +285,7 @@ export async function POST(req: NextRequest) {
         if (user.profileMinted) {
           const {
             data: {cid},
-          } = await axios.post(`${process.env.NEXT_PUBLIC_HOST}/api/ipfs`, {
+          } = await axios.post(`${process.env.NEXT_PUBLIC_HOST}/ipfs`, {
             values: mintedValuesArray,
             tokenId: user.profileNft,
           });
@@ -304,7 +304,7 @@ export async function POST(req: NextRequest) {
         } else {
           const {
             data: {cid},
-          } = await axios.post(`${process.env.NEXT_PUBLIC_HOST}/api/ipfs`, {
+          } = await axios.post(`${process.env.NEXT_PUBLIC_HOST}/ipfs`, {
             values: mintedValuesArray,
             tokenId: userProfileNftId,
           });

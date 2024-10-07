@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       fid: fid,
     });
     if (!user) {
-      axios.post(`${process.env.NEXT_PUBLIC_HOST}/api/pregenerator`, {
+      axios.post(`${process.env.NEXT_PUBLIC_HOST}/pregenerator`, {
         fid,
         referrer: "app.valuesdao.io",
       });
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     );
 
     if (userValues.length === 0) {
-      axios.post(`${process.env.NEXT_PUBLIC_HOST}/api/pregenerator`, {
+      axios.post(`${process.env.NEXT_PUBLIC_HOST}/pregenerator`, {
         fid,
         referrer: "app.valuesdao.io",
       });
