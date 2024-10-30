@@ -145,8 +145,9 @@ export const generateUserValues = async (
 
     return response;
   } catch (error) {
+    console.error("Error generating values:", error);
     return {
-      error: "Error generating values",
+      error: `Error generating values: ${error}`,
       topValues: [],
       userSpectrum: [],
       userValues: {},

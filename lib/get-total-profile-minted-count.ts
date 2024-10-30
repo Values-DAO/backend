@@ -12,16 +12,25 @@ export const getTotalProfileNFTsMintedCount = async (pageKey?: string) => {
     url += `&pageKey=${pageKey}`;
   }
 
-  const {data} = await axios.get(url);
+  // TODO: Can implement react-query here
+  // WAITING: Make the thing run first - viewing alignment page isn't working
+  try {
+    const {data} = await axios.get(url);
 
-  const count = data.nfts.length;
+    const count = data.nfts.length;
 
-  if (data.pageKey) {
-    // Call the API again with the new pageKey
-    const totalCount: Number =
-      count + (await getTotalProfileNFTsMintedCount(data.pageKey));
-    return totalCount;
+    if (data.pageKey) {
+      // Call the API again with the new pageKey
+      const totalCount: Number =
+        count + (await getTotalProfileNFTsMintedCount(data.pageKey));
+      return totalCount;
+    }
+
+    return count;
+  } catch (error) {
+    console.error("Error fetching total profile NFTs minted count", error);
+    return -1;
   }
-
-  return count;
 };
+
+// * This function will return the total number of NFTs minted for the profile contract.

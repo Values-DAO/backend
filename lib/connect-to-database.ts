@@ -10,3 +10,5 @@ export default async function connectToDatabase() {
     console.error("Error connecting to database", error);
   }
 }
+
+// TODO: Is this mechanism for connecting to the database fine or should we implement a system where it first checks for existing connection and if it doesn't exist, then it connects to the database?
