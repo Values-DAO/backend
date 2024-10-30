@@ -171,23 +171,20 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     // Send email to Pareen, Mohit and Siddhesh
-    // TODO: Fix the nodemailer issue
-    if (process.env.NEXT_PUBLIC_APP_ENV === "prod") {
-      await sendMail(
-        `Values generated via AI`,
-        generateEmailHTML({
-          action: "USER_VALUES_GENERATED",
-          fid: user?.fid,
-          email: user.email,
-          twitter: user.twitterUsername,
-          generatedValues:
-            user.generatedValues[source === "farcaster" ? "warpcast" : "twitter"],
-          source,
-          spectrum:
-            user.spectrum[source === "farcaster" ? "warpcast" : "twitter"],
-        })
-      );
-    }
+    await sendMail(
+      `Values generated via AI`,
+      generateEmailHTML({
+        action: "USER_VALUES_GENERATED",
+        fid: user?.fid,
+        email: user.email,
+        twitter: user.twitterUsername,
+        generatedValues:
+          user.generatedValues[source === "farcaster" ? "warpcast" : "twitter"],
+        source,
+        spectrum:
+          user.spectrum[source === "farcaster" ? "warpcast" : "twitter"],
+      })
+    );
 
 
     // Return the user object

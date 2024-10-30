@@ -17,8 +17,8 @@ export async function sendMail(subject: string, body: any) {
     from: process.env.NODEMAILER_EMAIL,
     to: `${
       process.env.NEXT_PUBLIC_APP_ENV === "prod"
-        ? "siddeshsankhya@gmail.com, pareenwriting@gmail.com"
-        : "siddeshsankhya@gmail.com"
+        ? "pareenwriting@gmail.com, xrayvego@gmail.com"
+        : "xrayvego@gmail.com"
     }`,
     subject: subject,
     html: body,
