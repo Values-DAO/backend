@@ -3,23 +3,28 @@ import {fetchCastsForUser} from "@/lib/fetch-user-casts";
 import {fetchUserTweets} from "@/lib/fetch-user-tweets";
 import {generateUserValues} from "@/lib/generate-user-values";
 import Users from "@/models/user";
-import Values from "@/models/values";
 import {generateEmailHTML, sendMail} from "@/service/email";
 import {NextRequest, NextResponse} from "next/server";
 
+// Error Handling: Refactored.
 export async function POST(req: NextRequest) {
   const {userId, farcaster, twitter, source} = await req.json();
 
+  const userContentRequirement = 5;
+
+  // Sanity checks
   if (!userId) {
     return NextResponse.json({
       status: 400,
       error: "Invalid input: 'userId' must be a string.",
+      message: "Invalid input: 'userId' must be a string.",
     });
   }
   if (source !== "twitter" && source !== "farcaster") {
     return NextResponse.json({
       status: 400,
       error: "Invalid input: 'source' must be either 'twitter' or 'farcaster'.",
+      message: "Invalid input: 'source' must be either 'twitter' or 'farcaster'.",
     });
   }
   if (
@@ -28,32 +33,40 @@ export async function POST(req: NextRequest) {
   ) {
     return NextResponse.json({
       status: 400,
-      error:
-        "Invalid input: 'farcaster.fid' or ('twitter.id' and 'twitter.username') must be provided.",
+      error: "Invalid input: 'farcaster.fid' or ('twitter.id' and 'twitter.username') must be provided.",
+      message: "Invalid input: 'farcaster.fid' or ('twitter.id' and 'twitter.username') must be provided.",
     });
   }
 
+  // Main logic to get user values
   try {
     await connectToDatabase();
     const user = await Users.findOne({userId});
 
+    // Sanity checks
     if (!user) {
       return NextResponse.json({
         status: 404,
         error: "User not found.",
+        message: "User not found."
       });
     }
+
     if (
       user.userContentRemarks &&
       user.userContentRemarks[
         source === "farcaster" ? "warpcast" : "twitter"
-      ] === "You have less than 100 tweets/casts."
+      ] === `You have less than ${userContentRequirement} tweets/casts.`
     ) {
       return NextResponse.json({
         status: 500,
-        error: "You have less than 100 tweets/casts.",
+        error: `You have less than ${userContentRequirement} tweets/casts.`,
+        message: `You have less than ${userContentRequirement} tweets/casts.`,
       });
     }
+
+
+    // If values already exist, return them
     if (
       user.generatedValues &&
       user.generatedValues[source === "farcaster" ? "warpcast" : "twitter"]
@@ -89,7 +102,10 @@ export async function POST(req: NextRequest) {
         },
       });
     }
-    // fetch user tweets or casts
+
+    // If the values don't exist, generate them
+
+    // Fetch the user content
     let userContent: string[] | any = [];
     if (source === "farcaster" && farcaster?.fid) {
       userContent = await fetchCastsForUser(farcaster?.fid, 100);
@@ -97,32 +113,44 @@ export async function POST(req: NextRequest) {
       userContent = await fetchUserTweets(twitter.id, 1);
     }
 
+
     if (userContent.error) {
       return NextResponse.json({
         status: 500,
         error: userContent.error,
-      });
-    }
-    if (userContent.length < 90) {
-      user.userContentRemarks[source === "farcaster" ? "warpcast" : "twitter"] =
-        "You have less than 100 tweets/casts.";
-      await user.save();
-      return NextResponse.json({
-        status: 500,
-        error: "You have less than 100 tweets/casts.",
+        message: `Error fetching user content (tweets/casts).`,
       });
     }
 
-    //now generate the values
+
+    if (userContent.length < userContentRequirement) {
+      user.userContentRemarks[source === "farcaster" ? "warpcast" : "twitter"] =
+        `You have less than ${userContentRequirement} tweets/casts.`;
+
+      await user.save();
+
+      return NextResponse.json({
+        status: 500,
+        error: `You have less than ${userContentRequirement} tweets/casts.`,
+        message: `You have less than ${userContentRequirement} tweets/casts.`,
+      });
+    }
+
+
+    // Generate the values and spectrum
     const generatedValues = await generateUserValues(userContent);
 
     if (generatedValues && generatedValues.error) {
       return NextResponse.json({
         status: 500,
-        error: generatedValues.error || "Error generating user values",
+        error: generatedValues.error,
+        message: "Error generating values.",
       });
     }
 
+    // Save the values and spectrum to the user
+
+    // Farcaster
     if (source === "farcaster") {
       user.generatedValues.warpcast = generatedValues.topValues.map((value) =>
         value.toLowerCase()
@@ -130,6 +158,8 @@ export async function POST(req: NextRequest) {
       user.generatedValuesWithWeights.warpcast = generatedValues.userValues;
       user.spectrum.warpcast = generatedValues.userSpectrum;
     }
+
+    // Twitter
     if (source === "twitter") {
       user.generatedValues.twitter = generatedValues.topValues.map((value) =>
         value.toLowerCase()
@@ -140,20 +170,27 @@ export async function POST(req: NextRequest) {
 
     await user.save();
 
-    await sendMail(
-      `Values generated via AI`,
-      generateEmailHTML({
-        action: "USER_VALUES_GENERATED",
-        fid: user?.fid,
-        email: user.email,
-        twitter: user.twitterUsername,
-        generatedValues:
-          user.generatedValues[source === "farcaster" ? "warpcast" : "twitter"],
-        source,
-        spectrum:
-          user.spectrum[source === "farcaster" ? "warpcast" : "twitter"],
-      })
-    );
+    // Send email to Pareen, Mohit and Siddhesh
+    // TODO: Fix the nodemailer issue
+    if (process.env.NEXT_PUBLIC_APP_ENV === "prod") {
+      await sendMail(
+        `Values generated via AI`,
+        generateEmailHTML({
+          action: "USER_VALUES_GENERATED",
+          fid: user?.fid,
+          email: user.email,
+          twitter: user.twitterUsername,
+          generatedValues:
+            user.generatedValues[source === "farcaster" ? "warpcast" : "twitter"],
+          source,
+          spectrum:
+            user.spectrum[source === "farcaster" ? "warpcast" : "twitter"],
+        })
+      );
+    }
+
+
+    // Return the user object
     return NextResponse.json({
       status: 200,
       message: "success",
@@ -183,10 +220,12 @@ export async function POST(req: NextRequest) {
         communitiesMinted: user.communitiesMinted,
       },
     });
+
   } catch (error) {
     return NextResponse.json({
       status: 500,
-      error: error || "Internal server error.",
+      error: error,
+      message: `Internal server error.`,
     });
   }
 }

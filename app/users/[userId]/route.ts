@@ -3,6 +3,7 @@ import Users from "@/models/user";
 import Values from "@/models/values";
 import {NextRequest, NextResponse} from "next/server";
 
+// Fetches the user data based on userId.
 export async function GET(
   req: NextRequest,
   params: {

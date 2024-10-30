@@ -2,6 +2,7 @@ import connectToDatabase from "@/lib/connect-to-database";
 import Values from "@/models/values";
 import {NextRequest, NextResponse} from "next/server";
 import {v4 as uuidv4} from "uuid";
+
 export async function POST(req: NextRequest) {
   const {name} = await req.json();
 
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// Fetches all Values from the database and returns an array of objects containing name, valueId and mintersCount.
 export async function GET() {
   try {
     await connectToDatabase();
