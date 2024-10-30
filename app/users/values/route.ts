@@ -3,6 +3,8 @@ import Users from "@/models/user";
 import axios from "axios";
 import {NextRequest, NextResponse} from "next/server";
 
+// This route checks for a user’s generated values based on their Farcaster ID (fid).
+// If the user or their values are not found in the database, it triggers the /pregenerator route to initiate user creation and value generation.
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
 

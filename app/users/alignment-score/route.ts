@@ -4,10 +4,13 @@ import logger from "@/lib/logger";
 import Users from "@/models/user";
 import {NextRequest, NextResponse} from "next/server";
 
+// This route is used to calculate an "alignment score" between two users based on their unique IDs (fid and targetFid).
+
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const fid = searchParams.get("fid");
   const targetFid = searchParams.get("targetFid");
+
   if (!fid || !targetFid) {
     logger.warn("Invalid input");
     return NextResponse.json({

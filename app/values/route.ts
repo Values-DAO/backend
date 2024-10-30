@@ -3,11 +3,17 @@ import Values from "@/models/values";
 import {NextRequest, NextResponse} from "next/server";
 import {v4 as uuidv4} from "uuid";
 
+// The purpose of these handlers is to allow users to create new "value" entries and to fetch a list of existing entries.
+
 export async function POST(req: NextRequest) {
   const {name} = await req.json();
 
   if (!name) {
-    return NextResponse.json({error: "Name is required"});
+    console.error("Name is required (POST /values)");
+    return NextResponse.json({
+      error: "Name is required",
+      message: "Name is required"
+    });
   }
   try {
     await connectToDatabase();
@@ -15,10 +21,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(Value);
   } catch (error: any) {
     if (error.code === 11000) {
-      return NextResponse.json({error: "Duplicate key error"});
+      console.error("Duplicate key error (POST /values)");
+      return NextResponse.json({
+        error: "Duplicate key error",
+        message: "Value already exists",
+      });
     } else {
-      console.error(error);
-      return NextResponse.json(error);
+      console.error("Error creating value (POST /values)", error);
+      return NextResponse.json({
+        error: error,
+        message: "Internal Server Error",
+      });
     }
   }
 }
@@ -39,6 +52,10 @@ export async function GET() {
 
     return NextResponse.json(updatedValues);
   } catch (error) {
-    return NextResponse.json(error);
+    console.error("Error fetching values (POST /values)", error);
+    return NextResponse.json({
+      error: error,
+      message: "Internal Server Error",
+    });
   }
 }

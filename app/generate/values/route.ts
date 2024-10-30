@@ -6,6 +6,11 @@ import Users from "@/models/user";
 import {generateEmailHTML, sendMail} from "@/service/email";
 import {NextRequest, NextResponse} from "next/server";
 
+// This route is an API endpoint that processes user data from either Farcaster or Twitter
+// to generate a set of values and a "spectrum" representing the user's interests or personality.
+// This data is then stored in a database and returned to the client.This route is an API endpoint that
+// processes user data from either Farcaster or Twitter to generate a set of values and a "spectrum" representing
+// the user's interests or personality. This data is then stored in a database and returned to the client.
 // Error Handling: Refactored.
 export async function POST(req: NextRequest) {
   const {userId, farcaster, twitter, source} = await req.json();
@@ -14,6 +19,7 @@ export async function POST(req: NextRequest) {
 
   // Sanity checks
   if (!userId) {
+    console.error("Invalid input: 'userId' must be a string. (POST /generate/values)");
     return NextResponse.json({
       status: 400,
       error: "Invalid input: 'userId' must be a string.",
@@ -21,6 +27,7 @@ export async function POST(req: NextRequest) {
     });
   }
   if (source !== "twitter" && source !== "farcaster") {
+    console.error("Invalid input: 'source' must be either 'twitter' or 'farcaster'. (POST /generate/values)");
     return NextResponse.json({
       status: 400,
       error: "Invalid input: 'source' must be either 'twitter' or 'farcaster'.",
@@ -31,6 +38,7 @@ export async function POST(req: NextRequest) {
     (source === "farcaster" && !farcaster?.fid) ||
     (source === "twitter" && !twitter.id && !twitter.username)
   ) {
+    console.error("Invalid input: 'farcaster.fid' or ('twitter.id' and 'twitter.username') must be provided. (POST /generate/values)");
     return NextResponse.json({
       status: 400,
       error: "Invalid input: 'farcaster.fid' or ('twitter.id' and 'twitter.username') must be provided.",
@@ -45,6 +53,7 @@ export async function POST(req: NextRequest) {
 
     // Sanity checks
     if (!user) {
+      console.error("User not found. (POST /generate/values)");
       return NextResponse.json({
         status: 404,
         error: "User not found.",
@@ -115,6 +124,7 @@ export async function POST(req: NextRequest) {
 
 
     if (userContent.error) {
+      console.error("Error fetching user content (tweets/casts) (POST /generate/values): ", userContent.error);
       return NextResponse.json({
         status: 500,
         error: userContent.error,
@@ -141,6 +151,7 @@ export async function POST(req: NextRequest) {
     const generatedValues = await generateUserValues(userContent);
 
     if (generatedValues && generatedValues.error) {
+      console.error("Error generating values (POST /generate/values): ", generatedValues.error);
       return NextResponse.json({
         status: 500,
         error: generatedValues.error,
@@ -170,7 +181,7 @@ export async function POST(req: NextRequest) {
 
     await user.save();
 
-    // Send email to Pareen, Mohit and Siddhesh
+    // Send email to Pareen and Rayvego
     await sendMail(
       `Values generated via AI`,
       generateEmailHTML({
@@ -219,6 +230,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
+    console.error("An error occurred (POST /generate/values): ", error);
     return NextResponse.json({
       status: 500,
       error: error,

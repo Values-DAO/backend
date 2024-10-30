@@ -3,6 +3,7 @@ import Users from "@/models/user";
 import Values from "@/models/values";
 import {NextRequest, NextResponse} from "next/server";
 
+// Error Handling: Refactored.
 // Fetches the user data based on userId.
 export async function GET(
   req: NextRequest,
@@ -14,20 +15,25 @@ export async function GET(
 ) {
   const {userId} = params.params;
   if (!userId) {
-    return NextResponse.json({error: "Please provide userId"});
+    return NextResponse.json({
+      error: "Please provide userId",
+      message: "Please provide userId"
+    });
   }
 
   try {
     await connectToDatabase();
 
-    const user = await Users.findOne({
-      userId,
-    });
+    const user = await Users.findOne({userId});
+
     if (!user) {
+      console.error("User not found (POST /users/:userId)");
       return NextResponse.json({
         error: "User not found",
+        message: "User not found",
       });
     }
+
     return NextResponse.json({
       userId: user.userId,
       ...(user.fid && {fid: user.fid}),
@@ -52,7 +58,10 @@ export async function GET(
       communitiesMinted: user.communitiesMinted,
     });
   } catch (error) {
-    console.error("Error fetching user:", error);
-    return NextResponse.json(error);
+    console.error("Error fetching user (POST /users/:userId):", error);
+    return NextResponse.json({
+      error: error,
+      message: "Internal server error",
+    });
   }
 }
