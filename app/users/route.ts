@@ -492,6 +492,7 @@ export async function POST(req: NextRequest) {
           });
         }
         user.fid = userDataToUpdate.fid;
+        user.farcasterUsername = userDataToUpdate.farcasterUsername;
         await user.save();
         return NextResponse.json({
           userId: user.userId,
