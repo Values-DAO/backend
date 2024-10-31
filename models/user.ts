@@ -20,6 +20,9 @@ const userSchema = new Schema(
     fid: {
       type: Number,
     },
+    farcasterUsername: {
+      type: String,
+    },
     twitterUsername: {
       type: String,
     },

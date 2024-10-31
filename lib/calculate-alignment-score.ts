@@ -6,7 +6,7 @@ type SpectrumItem = {
   description: string;
 };
 
-const calculateAverageScore = (scores: (number | undefined)[]): number => {
+export const calculateAverageScore = (scores: (number | undefined)[]): number => {
   // Filter out undefined scores
   const validScores = scores.filter((score): score is number => score !== undefined);
 
@@ -16,7 +16,7 @@ const calculateAverageScore = (scores: (number | undefined)[]): number => {
 };
 
 // Takes in a user object and returns an array of SpectrumItems.
-const getSpectrumForUser = (user: IUser): SpectrumItem[] => {
+export const getSpectrumForUser = (user: IUser): SpectrumItem[] => {
   const {warpcast, twitter} = user.spectrum;
   const maxLength = Math.max(warpcast?.length ?? 0, twitter?.length ?? 0);
 
@@ -32,7 +32,7 @@ const getSpectrumForUser = (user: IUser): SpectrumItem[] => {
 };
 
 // Takes in two user objects and returns a string representing the alignment score.
-const calculateAlignmentScore = (user: IUser, targetUser: IUser) => {
+export const calculateAlignmentScore = (user: IUser, targetUser: IUser) => {
   const userSpectrum = getSpectrumForUser(user);
   const targetSpectrum = getSpectrumForUser(targetUser);
 
@@ -51,5 +51,3 @@ const calculateAlignmentScore = (user: IUser, targetUser: IUser) => {
 
   return alignmentScore.toFixed(2);
 };
-
-export default calculateAlignmentScore;

@@ -35,3 +35,30 @@ export async function getFarcasterUser(fid: number) {
     return {};
   }
 }
+
+export async function getFarcasterUsernameFromFID(fid: number): Promise<string | null> {
+  const query = `query GetFarcasterUsername {
+  Socials(
+    input: {filter: {dappName: {_eq: farcaster}, userId: {_eq: "${fid}"}}, blockchain: ethereum}
+  ) {
+    Social {
+      profileHandle
+      profileName
+    }
+  }
+}`;
+
+  const graphQLClient = new GraphQLClient(AIRSTACK_API_URL, {
+    headers: {
+      Authorization: process.env.NEXT_PUBLIC_AIRSTACK_API_KEY || "",
+    },
+  });
+
+  try {
+    const data: FarcasterSocialData = await graphQLClient.request(query);
+
+    return data.Socials.Social[0].profileName;
+  } catch (error) {
+    return null;
+  }
+}
