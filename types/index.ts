@@ -60,3 +60,9 @@ export type FarcasterSearchUserType = {
     }[];
   };
 };
+
+export type SpectrumItem = {
+  name: string;
+  score: number;
+  description: string;
+};

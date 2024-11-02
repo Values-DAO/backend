@@ -5,7 +5,7 @@ import {calculateAlignmentScore, getSpectrumForUser} from "@/lib/calculate-align
 
 export async function GET(req: NextRequest) {
 	const searchParams = req.nextUrl.searchParams;
-	const viewer = searchParams.get("viewer");
+	const viewer = searchParams.get("viewer"); // farcaster or twitter username
 	const target = searchParams.get("target");
 
 	if (!viewer || !target) {

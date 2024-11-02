@@ -29,6 +29,10 @@ const userSchema = new Schema(
     twitterId: {
       type: String,
     },
+    trustPools: [{
+      type: Schema.Types.ObjectId,
+      ref: "TrustPools"
+    }],
     wallets: {
       type: [String],
       default: [],

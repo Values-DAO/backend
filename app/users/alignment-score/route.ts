@@ -1,4 +1,4 @@
-import calculateAlignmentScore from "@/lib/calculate-alignment-score";
+import {calculateAlignmentScore} from "@/lib/calculate-alignment-score";
 import connectToDatabase from "@/lib/connect-to-database";
 import logger from "@/lib/logger";
 import Users from "@/models/user";

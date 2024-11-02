@@ -1,10 +1,4 @@
-import {IUser} from "@/types";
-
-type SpectrumItem = {
-  name: string;
-  score: number;
-  description: string;
-};
+import {IUser, SpectrumItem} from "@/types";
 
 export const calculateAverageScore = (scores: (number | undefined)[]): number => {
   // Filter out undefined scores
