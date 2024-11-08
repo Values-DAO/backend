@@ -94,7 +94,10 @@ export async function GET(req: Request) {
 				twitterUsername: u.twitterUsername,
 			}
 		})
-
+		
+		// remove NaN alignment scores
+		alignmentScores.filter(a => !isNaN(parseFloat(a.alignmentScore)));
+		
 		// sort alignmentScores based on alignmentScore in descending order
 		alignmentScores.sort((a, b) => parseFloat(b.alignmentScore) - parseFloat(a.alignmentScore));
 

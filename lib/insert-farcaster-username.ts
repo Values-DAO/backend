@@ -12,7 +12,7 @@ export const insertFarcasterUsername = async () => {
 		let users;
 
 		do {
-			users = await Users.find({ farcasterUsername: { $exists: false } })
+			users = await Users.find({ farcasterUsername: { $exists: false }, fid: {$exists: true} })
         .skip(skip)
         .limit(BATCH_SIZE);
 
