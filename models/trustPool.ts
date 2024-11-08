@@ -1,7 +1,6 @@
 import mongoose, {models, Schema} from "mongoose";
 
 const trustPoolSchema = new Schema({
-  // name, description, logo, values, telegram link, twitter handle, owners, members
   name: {
     type: String,
     required: true,
@@ -12,10 +11,13 @@ const trustPoolSchema = new Schema({
   logo: {
     type: String,
   },
-  telegramLink: {
+  communityLink: {
     type: String,
   },
   twitterHandle: {
+    type: String,
+  },
+  farcasterHandle: {
     type: String,
   },
   organizerTwitterHandle: {

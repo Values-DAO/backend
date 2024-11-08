@@ -4,7 +4,7 @@ import TrustPools from "@/models/trustPool";
 import Users from "@/models/user";
 
 export async function POST(req: Request) {
-	const {name, description, logo, telegramLink, twitterHandle, organizerTwitterHandle, userId} = await req.json()
+	const {name, description, logo, communityLink, twitterHandle, farcasterHandle, organizerTwitterHandle, userId} = await req.json()
 
 	if (!name || !userId) {
 		return NextResponse.json({
@@ -22,8 +22,9 @@ export async function POST(req: Request) {
 			name,
 			description,
 			logo,
-			telegramLink,
+			communityLink,
 			twitterHandle,
+			farcasterHandle,
 			organizerTwitterHandle,
 			owners: [user._id],
 		})

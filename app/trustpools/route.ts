@@ -6,9 +6,10 @@ export async function GET(req: Request) {
 	try {
 		await connectToDatabase()
 
-		// find random 3 trust pools
+		// find most recent 40 trustpools
 		const trustpools = await TrustPools.aggregate([
-			{ $sample: { size: 3 } }
+			{ $sort: { createdAt: -1 } },
+			{ $limit: 40 }
 		])
 
 		if (trustpools.length === 0) {
