@@ -30,7 +30,7 @@ const trustPoolSchema = new Schema({
         ref: "Users",
       },
     ],
-		required: true,
+    required: true,
   },
   members: {
     type: [
@@ -40,6 +40,11 @@ const trustPoolSchema = new Schema({
       },
     ],
     default: [],
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    index: true,
   },
 });
 
