@@ -18,10 +18,6 @@ export async function GET(req: Request) {
       });
     }
 
-    NextResponse.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
-    NextResponse.headers.set("Expires", "0");
-    NextResponse.headers.set("Surrogate-Control", "no-store");
-
     return NextResponse.json({
       status: 200,
       message: "Trustpools found successfully",
