@@ -78,10 +78,14 @@ export async function GET(req: Request) {
 
 		// combine all members and owners and store in an array
 		const allUsers = [...trustpool.owners, ...trustpool.members];
+		// console.log("allUsers: ", allUsers)
 
-		// remove the user from the array
-		const userIndex = allUsers.findIndex(u => u.userId === user.userId);
-		allUsers.splice(userIndex, 1);
+		// remove the user from the array if they are in the trustpool
+		if (allUsers.some(u => u.userId === user.userId)) {
+			allUsers.splice(allUsers.findIndex(u => u.userId === user.userId), 1);
+		}
+		
+		// console.log("allUsers after removing user: ", allUsers)
 
 		// calculate alignment between user and all other users
 		const userSpectrum = getSpectrum(user.spectrum);
@@ -95,6 +99,8 @@ export async function GET(req: Request) {
 			}
 		})
 		
+		// console.log(alignmentScores)
+		
 		// remove NaN alignment scores
 		alignmentScores.filter(a => !isNaN(parseFloat(a.alignmentScore)));
 		
@@ -106,13 +112,16 @@ export async function GET(req: Request) {
 
 		// get top 3 most diverse users
 		const topDiverseUsers = alignmentScores.slice(-3);
-
+		
+		// reverse the topDiverseUsers array to get the most diverse users first
+		topDiverseUsers.reverse();
+		
 		return NextResponse.json({
 			status: 200,
 			message: "Alignment found successfully",
 			data: {
 				topAlignedUsers,
-				topDiverseUsers
+				topDiverseUsers,
 			}
 		})
 

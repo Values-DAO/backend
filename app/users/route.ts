@@ -23,6 +23,7 @@ const viemWalletClient = createWalletClient({
 export async function POST(req: NextRequest) {
   const {
     fid,
+    farcasterUsername,
     twitter,
     email,
     profileNftIpfs,
@@ -83,6 +84,7 @@ export async function POST(req: NextRequest) {
         const createdUser = await Users.create({
           userId: `user_${uuidv4()}`,
           ...(fid && {fid}),
+          ...(farcasterUsername && {farcasterUsername}),
           ...(email && {email}),
           ...(twitter && {twitterUsername: twitter.username}),
           ...(twitter && {twitterId: twitter.id}),
