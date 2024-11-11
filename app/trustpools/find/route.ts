@@ -21,10 +21,10 @@ export async function GET(req: Request) {
 		await connectToDatabase()
 
 		const trustpool = await TrustPools.findById(trustPoolId)
-      .populate("owners", "farcasterUsername twitterUsername userId")
+      .populate("owners", "farcasterUsername twitterUsername userId email")
       .populate({
         path: "members",
-        select: "farcasterUsername twitterUsername userId",
+        select: "farcasterUsername twitterUsername userId email",
         options: { sort: { joinDate: -1 } },
       });
 

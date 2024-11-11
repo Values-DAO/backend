@@ -27,9 +27,10 @@ export async function GET(req: Request) {
 					$or: [
 						{ farcasterUsername: { $regex: username, $options: "i" } },
 						{ twitterUsername: { $regex: username, $options: "i" } },
+						{ email: { $regex: username, $options: "i" } },
 					],
 				},
-				select: "username farcasterUsername twitterUsername _id",
+				select: "username farcasterUsername twitterUsername _id email",
 			})
 
 		if (trustpool.members.length === 0) {
