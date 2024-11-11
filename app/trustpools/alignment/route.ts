@@ -75,11 +75,17 @@ export async function GET(req: Request) {
 				message: "Trustpool not found",
 			})
 		}
-
+		
 		// combine all members and owners and store in an array
-		const allUsers = [...trustpool.owners, ...trustpool.members];
+		let allUsers = [...trustpool.owners, ...trustpool.members];
 		// console.log("allUsers: ", allUsers)
-
+		
+		// remove all the users who don't have farcaster or twitter usernames
+		// allUsers is an array of objects
+		
+		allUsers = allUsers.filter(u => u.farcasterUsername || u.twitterUsername);
+		// console.log(allUsers)
+		
 		// remove the user from the array if they are in the trustpool
 		if (allUsers.some(u => u.userId === user.userId)) {
 			allUsers.splice(allUsers.findIndex(u => u.userId === user.userId), 1);
@@ -89,7 +95,7 @@ export async function GET(req: Request) {
 
 		// calculate alignment between user and all other users
 		const userSpectrum = getSpectrum(user.spectrum);
-		const alignmentScores = allUsers.map(u => {
+		let alignmentScores = allUsers.map(u => {
 			const targetSpectrum = getSpectrum(u.spectrum);
 			return {
 				userId: u.userId,
@@ -102,7 +108,7 @@ export async function GET(req: Request) {
 		// console.log(alignmentScores)
 		
 		// remove NaN alignment scores
-		alignmentScores.filter(a => !isNaN(parseFloat(a.alignmentScore)));
+		alignmentScores = alignmentScores.filter(a => !isNaN(parseFloat(a.alignmentScore)));
 		
 		// sort alignmentScores based on alignmentScore in descending order
 		alignmentScores.sort((a, b) => parseFloat(b.alignmentScore) - parseFloat(a.alignmentScore));
