@@ -5,13 +5,22 @@ import {calculateAlignmentScore, getSpectrumForUser} from "@/lib/calculate-align
 
 export async function GET(req: NextRequest) {
 	const searchParams = req.nextUrl.searchParams;
-	const viewer = searchParams.get("viewer"); // farcaster or twitter username
-	const target = searchParams.get("target");
-
+	let viewer = searchParams.get("viewer"); // farcaster or twitter username
+	let target = searchParams.get("target");
+	
 	if (!viewer || !target) {
 		return NextResponse.json({
 			error: "Please provide viewer and target usernames."
 		})
+	}
+	
+	// if viewer or target end with ".eth", remove it
+	if (viewer.endsWith(".eth")) {
+		viewer = viewer.slice(0, -4)
+	}
+	
+	if (target.endsWith(".eth")) {
+		target = target.slice(0, -4)
 	}
 
 	// get viewer and target user info
