@@ -119,8 +119,9 @@ export async function POST(req: NextRequest) {
     if (source === "farcaster" && farcaster?.fid) {
       userContent = await fetchCastsForUser(farcaster?.fid, 100);
     } else {
-      userContent = await fetchUserTweets(twitter.id, 1);
+      userContent = await fetchUserTweets(twitter.id, user.twitterUsername);
     }
+    
 
 
     if (userContent.error) {
