@@ -66,3 +66,42 @@ export type SpectrumItem = {
   score: number;
   description: string;
 };
+
+export interface CoreValue {
+	[key: string]: number;
+}
+
+export enum SourceEnum {
+	Twitter = "Twitter",
+	Youtube = "Youtube",
+	Farcaster = "Farcaster",
+	Telegram = "Telegram",
+}
+
+export interface ValueAlignedPost {
+	posterUsername: string;
+	content: string;
+	timestamp: Date;
+	values: string[];
+	title: string;
+	source: SourceEnum;
+}
+
+export interface TopPoster {
+	username: string;
+}
+
+export interface GenerateCommunityValuesResponse {
+	core_values: CoreValue;
+	spectrum: SpectrumItem[];
+	value_aligned_posts: ValueAlignedPost[];
+	top_posters: TopPoster[];
+  description: string;
+	error?: string;
+}
+
+export interface CultureBotMessage {
+	text: string;
+	senderUsername: string;
+	createdAt: Date;
+}

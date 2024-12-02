@@ -8,7 +8,7 @@ import {NextRequest, NextResponse} from "next/server";
 
 // This route is an API endpoint that processes user data from either Farcaster or Twitter
 // to generate a set of values and a "spectrum" representing the user's interests or personality.
-// This data is then stored in a database and returned to the client.This route is an API endpoint that
+// This data is then stored in a database and returned to the client. This route is an API endpoint that
 // processes user data from either Farcaster or Twitter to generate a set of values and a "spectrum" representing
 // the user's interests or personality. This data is then stored in a database and returned to the client.
 // Error Handling: Refactored.

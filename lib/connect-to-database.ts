@@ -1,14 +1,30 @@
 import mongoose from "mongoose";
 
-export default async function connectToDatabase() {
+const MONGODB_URI = process.env.MONGODB_URI || "";
+
+if (!MONGODB_URI) {
+  throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
+}
+
+async function connectToDatabase() {
+  // Check if we have a connection to the database or if it's already connected
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
   try {
-    if (mongoose.connection.readyState !== 1) {
-      await mongoose.connect(process.env.MONGODB_URI || "");
-      console.log("Connected to database");
-    }
+    const conn = await mongoose.connect(MONGODB_URI, {
+      // These options help with connection stability
+      bufferCommands: false,
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+    });
+
+    console.log("Connected to database");
+    return conn.connection;
   } catch (error) {
-    console.error("Error connecting to database", error);
+    console.error("Failed to connect to database", error);
+    throw error;
   }
 }
 
-// TODO: Is this mechanism for connecting to the database fine or should we implement a system where it first checks for existing connection and if it doesn't exist, then it connects to the database?
+export default connectToDatabase;
