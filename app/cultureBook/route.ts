@@ -28,17 +28,16 @@ export async function GET(req: Request) {
       });
     }
     
+    
     return NextResponse.json({
       status: 200,
       data: {
-        core_values: trustpool.core_values,
-        spectrum: trustpool.spectrum,
-        value_aligned_posts: trustpool.value_aligned_posts,
-        top_posters: trustpool.top_posters,
-        description: trustpool.description,
+        posts: trustpool.value_aligned_posts,
+        ticker: trustpool.ticker,
+        tokenPrice: trustpool.tokenPrice,
         // TODO: Add tokenomics fields to the response
-      }
-    })
+      },
+    });
   } catch (error) {
     console.error("Error fetching culture book data:", error);
     return NextResponse.json({

@@ -79,6 +79,7 @@ export enum SourceEnum {
 }
 
 export interface ValueAlignedPost {
+  // id: string;
 	posterUsername: string;
 	content: string;
 	timestamp: Date;

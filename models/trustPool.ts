@@ -60,6 +60,7 @@ const trustPoolSchema = new Schema({
   value_aligned_posts: [
     {
       type: {
+        id: { type: String, required: true },
         posterUsername: { type: String, required: true },
         content: { type: String, required: true },
         timestamp: { type: Date, required: true },
@@ -85,6 +86,27 @@ const trustPoolSchema = new Schema({
     }
   },
   // TODO: Add tokenomics fields
+  ticker: {
+    type: String,
+  },
+  tokenAddress: {
+    type: String,
+  },
+  tokenDecimals: {
+    type: Number,
+  },
+  tokenSupply: {
+    type: Number,
+  },
+  tokenPrice: {
+    type: Number,
+  },
+  tokenHolders: {
+    type: Number,
+  },
+  tokenMarketCap: {
+    type: Number,
+  },
   // createdAt: {
   //   type: Date,
   //   default: Date.now,
