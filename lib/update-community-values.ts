@@ -1,5 +1,5 @@
 import type { Message } from "@/models/cultureBotCommunity";
-import type { CoreValue, CultureBotMessage, GenerateCommunityValuesResponse, SpectrumItem } from "@/types";
+import type { CoreValue, CultureBotMessage, SpectrumItem, UpdateCommunityValuesResponse } from "@/types";
 import OpenAI from "openai";
 
 export const updateCommunityValues = async ({
@@ -10,7 +10,7 @@ export const updateCommunityValues = async ({
   messages: CultureBotMessage[];
   core_values: CoreValue,
   spectrum: SpectrumItem[],
-}): Promise<GenerateCommunityValuesResponse> => {
+}): Promise<UpdateCommunityValuesResponse> => {
   const newMessages = JSON.stringify(messages);
   const existingCoreValues = JSON.stringify(core_values);
   const existingSpectrum = JSON.stringify(spectrum);
@@ -92,67 +92,22 @@ ${existingCoreValues}
 ${existingSpectrum}
 </existing_spectrum>
 
-Your task is to analyze this data and provide output in 5 key areas:
+Your task is to analyze this data and provide output in the following key area:
 
-	1.	CORE VALUES UPDATE
-	- Analyze new messages and compare with existing core values.
-	- Adjust the weight (1-100) of each value based on the frequency and emphasis in the new messages.
-	- Maintain any existing values unless significant changes occur.
-
-2. SPECTRUM ANALYSIS
-Evaluate changes in the community based on these spectrums (1-100, where 1 = left term, 100 = right term):
-- Individualism vs Collectivism
-- Capitalism vs Communism
-- Holistic vs Reductive
-- Internal-focused vs External-focused
-- More control vs Less control
-- People vs Systems
-- Asceticism vs Hedonism
-- Past-oriented vs Future-oriented
-- Highly trusting vs Highly cynical
-- Process-oriented vs Outcome-oriented
-- High risk tolerance vs Low risk tolerance
-- Tribalism vs Universalism
-- Idealism vs Utilitarianism
-- Global vs Local
-- Specific vs Abstract
-
-- Update scores based on observed shifts.
-
-3. VALUE-ALIGNED POSTS
--	Identify messages that demonstrate core values from the new chat history.
+1. VALUE-ALIGNED POSTS
+-	Identify messages that align with the value spectrums of the community.
 - Each message must include:
 	- Poster’s username
 	- Message content
 	- Timestamp
-	- Values demonstrated
-	- A brief title
+	- A brief title that shows the culture and symbolism of the post
 	- Source (always “Telegram”)
 - Do not modify or fabricate any message content
 - If no posts clearly demonstrate values, return empty array
+- Make sure to find culturally significant posts containing an event, ritual, community value, or other important cultural element.
 - Output format is provided below (value_aligned_posts)
 
-4. TOP POSTERS ANALYSIS
-- Identify users whose messages are most aligned with core values in the new chat history.
-- Return an empty array if no posts demonstrate values.
-- Output format is provided below (top_posters)
-
-5.	CULTURE SHIFT DESCRIPTION
-	- Provide a brief summary describing the overall cultural shift in the community.
-	- Highlight key changes in core values and spectrum scores.
-	- Example: “The community is showing a growing emphasis on collaboration (Collectivism) and empathy, while focusing less on risk-taking.”
-  - Output format is shown below (description)
-
 Output must be valid JSON matching this structure:
-interface CoreValue {
-	[key: string]: number;
-}
-
-interface SpectrumItem {
-	name: string;
-	description: string;
-	score: number;
-}
 
 enum SourceEnum {
 	Twitter = "Twitter",
@@ -165,24 +120,14 @@ interface ValueAlignedPost {
 	posterUsername: string;
 	content: string;
 	timestamp: Date;
-	values: string[];
 	title: string;
 	source: SourceEnum;
 }
 
-interface TopPoster {
-	username: string;
-}
-
 interface GenerateCommunityValuesResponse {
-	core_values: CoreValue;
-	spectrum: SpectrumItem[];
 	value_aligned_posts: ValueAlignedPost[];
-	top_posters: TopPoster[];
-  description: string;
 	error?: string;
 }
-
 
 CRITICAL RULES:
 - Output must be valid JSON
@@ -202,21 +147,13 @@ CRITICAL RULES:
     console.log(res)
 
     return {
-      core_values: res.core_values,
-      spectrum: res.spectrum,
       value_aligned_posts: res.value_aligned_posts,
-      top_posters: res.top_posters,
-      description: res.description,
     };
   } catch (error) {
     console.error("Error updating community values:", error);
     return {
       error: `Error updating community values: ${error}`,
-      core_values: {},
-      spectrum: [],
       value_aligned_posts: [],
-      top_posters: [],
-      description: "",
     };
   }
 };

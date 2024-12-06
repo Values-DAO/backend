@@ -1,4 +1,9 @@
 import mongoose from "mongoose";
+import '@/models/cultureBotMessage';
+import '@/models/cultureBotCommunity';
+import '@/models/trustPool';
+import '@/models/cultureBook';
+import '@/models/user';
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
 

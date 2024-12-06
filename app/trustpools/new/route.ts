@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import connectToDatabase from "@/lib/connect-to-database";
 import TrustPools from "@/models/trustPool";
 import Users from "@/models/user";
+import CultureBook from "@/models/cultureBook";
 
 export async function POST(req: Request) {
 	const {name, description, logo, communityLink, twitterHandle, farcasterHandle, organizerTwitterHandle, userId} = await req.json()
@@ -28,7 +29,21 @@ export async function POST(req: Request) {
 			organizerTwitterHandle,
 			owners: [user._id],
 		})
+		
+		const cultureBook = await CultureBook.create({
+			value_aligned_posts: [],
+			top_posters: [],
+			core_values: {},
+			spectrum: [],
+			updateDescription: {
+				content: "Initial culture book creation",
+			},
+		})
 
+		trustpool.cultureBook = cultureBook._id
+		cultureBook.trustPool = trustpool._id
+		await trustpool.save()
+		await cultureBook.save()
 
 		if (!user.trustPools) {
 			user.trustPools = []; // Initialize if the field doesn't exist

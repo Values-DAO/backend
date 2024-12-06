@@ -13,7 +13,7 @@ interface Message extends Document {
 
 // Base Community interface (without populated fields)
 interface CommunityBase {
-  trustPoolId: string;
+  trustPool: Schema.Types.ObjectId;
   trustPoolName: string;
   communityName: string;
   chatId: string;
@@ -24,7 +24,7 @@ interface CommunityBase {
   publicKey?: string;
   balance: number;
   messages: Schema.Types.ObjectId[] | Message[];
-  cultureBook: Schema.Types.ObjectId
+  cultureBook: Schema.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -38,18 +38,25 @@ interface PopulatedCommunity extends Omit<Community, "messages"> {
 }
 
 // Define the schema for the Community
-export const cultureBotCommunitySchema = new Schema<Community>(
+const cultureBotCommunitySchema = new Schema<Community>(
   {
-    trustPoolId: {
-      type: String,
-      required: true,
-      unique: true,
-    },
+    // * Trust Pool
     trustPoolName: {
       type: String,
       required: true,
     },
-    communityName: {
+    trustPool: {
+      type: Schema.Types.ObjectId,
+      ref: "TrustPools",
+      required: true,
+    },
+    // * Culture Book
+    cultureBook: {
+      type: Schema.Types.ObjectId,
+      ref: "CultureBook",
+    },
+    // * General Info
+    communityName: { // name of the telegram group
       type: String,
       required: true,
     },
@@ -70,6 +77,7 @@ export const cultureBotCommunitySchema = new Schema<Community>(
       type: Boolean,
       default: true,
     },
+    // ? Remove the below 3 fields?
     privateKey: {
       type: String,
     },
@@ -85,11 +93,7 @@ export const cultureBotCommunitySchema = new Schema<Community>(
         type: Schema.Types.ObjectId,
         ref: "CultureBotMessage",
       },
-    ],
-    cultureBook: {
-      type: Schema.Types.ObjectId,
-      ref: "CultureBook",
-    }
+    ]
   },
   { timestamps: true }
 );

@@ -1,19 +1,17 @@
-import { CultureBotMessage } from "@/models/cultureBotMessage";
 import { CultureBotCommunity, type Message, type PopulatedCommunity } from "@/models/cultureBotCommunity";
 import TrustPools from "@/models/trustPool";
 import connectToDatabase from "@/lib/connect-to-database";
 import { NextResponse } from "next/server";
 import { generateCommunityValues } from "@/lib/generate-community-values";
 import { updateCommunityValues } from "@/lib/update-community-values";
-import { v4 } from "uuid";
 
 // * This route will generate the community values for a given community.
 // * If it is for the first time then it will generate the values and save them to the trustpool.
 // * If not then it will run the update prompt and update the content.
 
-export async function GET(req: Request) {
-	const { searchParams } = new URL(req.url);
-	const trustPoolId = searchParams.get("trustPoolId");
+export async function POST(req: Request) {
+	// get trustpoolId from the request body
+  const { trustPoolId } = await req.json();
 
 	if (!trustPoolId) {
 		return NextResponse.json({
@@ -25,7 +23,8 @@ export async function GET(req: Request) {
 	
 	try {
     await connectToDatabase();
-    const trustpool = await TrustPools.findById(trustPoolId);
+    const trustpool = await TrustPools.findById(trustPoolId).populate("cultureBook")
+    console.log(trustpool)
 
     if (!trustpool) {
       return NextResponse.json({
@@ -35,9 +34,7 @@ export async function GET(req: Request) {
       });
     }
 
-    const mess = await CultureBotMessage.find({ trustPoolId });
-
-    const community = await CultureBotCommunity.findOne({ trustPoolId }).populate("messages");
+    const community = await CultureBotCommunity.findOne({ trustPool: trustPoolId }).populate("messages");
 
     if (!community) {
       return NextResponse.json({
@@ -53,68 +50,61 @@ export async function GET(req: Request) {
       createdAt: message.createdAt,
     }));
     
-    const slicedMessages = messages.slice(0, 20)
+    // TODO: Remove this after testing!!
+    const slicedMessages = messages.slice(-100)
     
-    if (trustpool.core_values && trustpool.core_values.size > 0) {
+    if (trustpool.cultureBook.core_values && trustpool.cultureBook.core_values.size > 0) {
       // Update the values
-      const { core_values, spectrum, value_aligned_posts, top_posters, description } = await updateCommunityValues({
+      const { value_aligned_posts } = await updateCommunityValues({
         messages: slicedMessages,
-        core_values: trustpool.core_values,
-        spectrum: trustpool.spectrum,
+        core_values: trustpool.cultureBook.core_values,
+        spectrum: trustpool.cultureBook.spectrum,
       });
 
-      trustpool.core_values = core_values;
-      trustpool.spectrum = spectrum;
-      // value_aligned_posts.forEach((post) => {
-      //   post.id = v4();
-      // });
-      trustpool.value_aligned_posts.push(...value_aligned_posts);
-      trustpool.top_posters.push(...top_posters);
-      trustpool.updateDescription = { content: description };
-      
-      await trustpool.save();
-      
+      // Update the CultureBook fields
+      trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);
+
+      // Save the updated CultureBook
+      await trustpool.cultureBook.save();
+
       return NextResponse.json({
         status: 200,
-        message: "Community values updated successfully",
+        message: "Value aligned posts extracted successfully",
+        data: {
+          value_aligned_posts,
+        },
+      });
+    } else {
+      // Generate the values
+      const { core_values, spectrum } = await generateCommunityValues(slicedMessages);
+
+      trustpool.cultureBook.core_values = core_values;
+      trustpool.cultureBook.spectrum = spectrum;
+
+      // await trustpool.cultureBook.save();
+
+      // Update the values
+      const { value_aligned_posts } = await updateCommunityValues({
+        messages: slicedMessages,
+        core_values: trustpool.cultureBook.core_values,
+        spectrum: trustpool.cultureBook.spectrum,
+      });
+
+      // Update the CultureBook fields
+      trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);
+
+      // Save the updated CultureBook
+      await trustpool.cultureBook.save();
+
+      return NextResponse.json({
+        status: 200,
+        message: "Community values generated and posts extracted successfully",
         data: {
           core_values,
           spectrum,
-          value_aligned_posts,
-          top_posters,
-          description
-        }
-      })
+        },
+      });
     }
-
-    // Generate the values
-    const { core_values, spectrum, value_aligned_posts, top_posters, description } = await generateCommunityValues(
-      slicedMessages
-    );
-
-    trustpool.core_values = core_values;
-    trustpool.spectrum = spectrum;
-    // want to give each post a unique id using uuid
-    // value_aligned_posts.forEach((post) => {
-    //   post.id = v4();
-    // });
-    trustpool.value_aligned_posts.push(...value_aligned_posts);
-    trustpool.top_posters.push(...top_posters);
-    trustpool.updateDescription = {content: description};
-    
-    await trustpool.save();
-    
-    return NextResponse.json({
-      status: 200,
-      message: "Community values generated successfully",
-      data: {
-        core_values,
-        spectrum,
-        value_aligned_posts,
-        top_posters,
-        description,
-      }
-    })
   } catch (error) {
 		console.error("Error generating community values (GET /cultureCommunity): ", error);
 		return NextResponse.json({

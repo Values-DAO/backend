@@ -67,6 +67,21 @@ export type SpectrumItem = {
   description: string;
 };
 
+export interface TrustPool {
+	_id: Schema.Types.ObjectId
+	name: string;
+	description?: string;
+	logo?: string;
+	communityLink?: string;
+	twitterHandle?: string;
+	farcasterHandle?: string;
+	organizerTwitterHandle?: string;
+	owners: IUser[];
+	members: IUser[];
+	cultureBook: Schema.Types.ObjectId;
+	cultureBotCommunity: Schema.Types.ObjectId;
+}
+
 export interface CoreValue {
 	[key: string]: number;
 }
@@ -79,11 +94,9 @@ export enum SourceEnum {
 }
 
 export interface ValueAlignedPost {
-  // id: string;
 	posterUsername: string;
 	content: string;
 	timestamp: Date;
-	values: string[];
 	title: string;
 	source: SourceEnum;
 }
@@ -93,12 +106,14 @@ export interface TopPoster {
 }
 
 export interface GenerateCommunityValuesResponse {
-	core_values: CoreValue;
-	spectrum: SpectrumItem[];
-	value_aligned_posts: ValueAlignedPost[];
-	top_posters: TopPoster[];
-  description: string;
-	error?: string;
+  core_values: CoreValue;
+  spectrum: SpectrumItem[];
+  error?: string;
+}
+
+export interface UpdateCommunityValuesResponse {
+  value_aligned_posts: ValueAlignedPost[];
+  error?: string;
 }
 
 export interface CultureBotMessage {

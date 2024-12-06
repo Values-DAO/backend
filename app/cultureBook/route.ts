@@ -18,7 +18,11 @@ export async function GET(req: Request) {
   
   try {
     await connectToDatabase();
-    const trustpool = await TrustPools.findById(trustPoolId);
+    const trustpool = await TrustPools.findById(trustPoolId).populate({
+      path: "cultureBook",
+      select: "value_aligned_posts"
+    })
+    
     
     if (!trustpool) {
       return NextResponse.json({
@@ -28,14 +32,23 @@ export async function GET(req: Request) {
       });
     }
     
+    if (!trustpool.cultureBook) {
+      return NextResponse.json({
+        status: 404,
+        error: "Culture Book not found",
+        message: "Culture Book not found",
+      });
+    }
+    
+    const value_aligned_posts = trustpool.cultureBook.value_aligned_posts
     
     return NextResponse.json({
       status: 200,
       data: {
-        posts: trustpool.value_aligned_posts,
-        ticker: trustpool.ticker,
-        tokenPrice: trustpool.tokenPrice,
-        // TODO: Add tokenomics fields to the response
+        posts: value_aligned_posts,
+        // TODO: Add real tokenomics fields to the response
+        ticker: "test",
+        tokenPrice: "100",
       },
     });
   } catch (error) {

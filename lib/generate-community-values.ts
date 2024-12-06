@@ -6,6 +6,7 @@ export const generateCommunityValues = async (
 ): Promise<GenerateCommunityValuesResponse> => {
 	const content = JSON.stringify(messages);
 
+  
 	const openai = new OpenAI({
 		apiKey: process.env.OPENAI_API_KEY,
 	});
@@ -75,7 +76,7 @@ Now, here is the chat history from the community you need to analyze:
 ${content}
 </messages>
 
-Your task is to analyze this data and provide output in 5 key areas:
+Your task is to analyze this data and provide output in 2 key areas:
 
 1. CORE VALUES ANALYSIS
 - Read through each message carefully
@@ -101,28 +102,6 @@ Rate the community on these spectrums (1-100, where 1 = left term, 100 = right t
 - Global vs Local
 - Specific vs Abstract
 
-3. VALUE-ALIGNED POSTS
-- Identify all messages from the chat history that explicitly demonstrate core values and give me anywhere between 0-7 messages.
-- For each matching post, include:
-  * Exact message content
-  * Original sender's username
-  * Original timestamp
-  * Values demonstrated
-  * A brief title
-  * Source (always "Telegram" for these messages)
-- Do not modify or fabricate any message content
-- If no posts clearly demonstrate values, return empty array
-- Output format is provided below (value_aligned_posts)
-
-4. TOP POSTERS ANALYSIS
-- Identify all users who's messages are most aligned with core values again give me anywhere between 0-7 users.
-- Output format is provided below (top_posters)
-
-5. CULTURE  DESCRIPTION
-- Provide a brief summary describing the overall cultural in the community.
-- Example: “The community is showing a growing emphasis on collaboration (Collectivism) and empathy, while focusing less on risk-taking.”
-- Output format is shown below (description under GenerateCommunityValuesResponse)
-
 Output must be valid JSON matching this structure:
 interface CoreValue {
 	[key: string]: number;
@@ -134,35 +113,11 @@ interface SpectrumItem {
 	score: number;
 }
 
-enum SourceEnum {
-	Twitter = "Twitter",
-	Youtube = "Youtube",
-	Farcaster = "Farcaster",
-	Telegram = "Telegram",
-}
-
-interface ValueAlignedPost {
-	posterUsername: string;
-	content: string;
-	timestamp: Date;
-	values: string[];
-	title: string;
-	source: SourceEnum;
-}
-
-interface TopPoster {
-	username: string;
-}
-
 interface GenerateCommunityValuesResponse {
 	core_values: CoreValue;
 	spectrum: SpectrumItem[];
-	value_aligned_posts: ValueAlignedPost[];
-	top_posters: TopPoster[];
-	description: string;
 	error?: string;
 }
-
 
 CRITICAL RULES:
 - Output must be valid JSON
@@ -186,9 +141,6 @@ CRITICAL RULES:
 		return {
 			core_values: res.core_values,
 			spectrum: res.spectrum,
-			value_aligned_posts: res.value_aligned_posts,
-			top_posters: res.top_posters,
-			description: res.description,
 		};
 	} catch (error) {
 		console.error("Error generating community values:", error);
@@ -196,9 +148,6 @@ CRITICAL RULES:
       error: `Error generating community values: ${error}`,
       core_values: {},
       spectrum: [],
-      value_aligned_posts: [],
-      top_posters: [],
-      description: "",
     };
 	}
 };
