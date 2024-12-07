@@ -3,9 +3,10 @@ import connectToDatabase from "@/lib/connect-to-database";
 import TrustPools from "@/models/trustPool";
 import Users from "@/models/user";
 import CultureBook from "@/models/cultureBook";
+import CultureToken from "@/models/cultureToken";
 
 export async function POST(req: Request) {
-	const {name, description, logo, communityLink, twitterHandle, farcasterHandle, organizerTwitterHandle, userId} = await req.json()
+	const {name, description, logo, communityLink, twitterHandle, farcasterHandle, organizerTwitterHandle, userId, tokenName, tokenSymbol, curatorTreasuryAllocation, treasuryAllocation} = await req.json()
 
 	if (!name || !userId) {
 		return NextResponse.json({
@@ -39,11 +40,30 @@ export async function POST(req: Request) {
 				content: "Initial culture book creation",
 			},
 		})
-
-		trustpool.cultureBook = cultureBook._id
+		
+		const cultureToken = await CultureToken.create({
+			tokenName,
+			tokenSymbol,
+			allocationAddress: {
+				curatorTreasuryAllocation,
+				treasuryAllocation,
+			},
+		})
+		
+		// Link the trust pool, culture book, and culture token together
+		cultureBook.cultureToken = cultureToken._id
 		cultureBook.trustPool = trustpool._id
+		cultureToken.trustPool = trustpool._id
+		cultureToken.cultureBook = cultureBook._id
+		trustpool.cultureToken = cultureToken._id
+		trustpool.cultureBook = cultureBook._id
+		
+		// Save the trust pool, culture book, and culture token
 		await trustpool.save()
 		await cultureBook.save()
+		await cultureToken.save()
+		
+		// TODO: Call smart contract here
 
 		if (!user.trustPools) {
 			user.trustPools = []; // Initialize if the field doesn't exist
@@ -59,7 +79,7 @@ export async function POST(req: Request) {
 
 		return NextResponse.json({
 			status: 201,
-			message: "Trustpool created successfully",
+			message: "Trustpool, Culture Book and Culture Token created successfully",
 			data: trustpool
 		})
 	} catch (error) {

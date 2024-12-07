@@ -1,4 +1,5 @@
-// * This route will fetch all the data for the culture book required to display on the culture book (onchain content).
+
+// * This route will fetch all the data for the culture book required to display on the curate tab.
 
 import connectToDatabase from "@/lib/connect-to-database";
 import TrustPools from "@/models/trustPool";
@@ -41,18 +42,14 @@ export async function GET(req: Request) {
       });
     }
     
-    // get all the value aligned posts that have onchain set to true
-    const value_aligned_posts = trustpool.cultureBook.value_aligned_posts.filter(
-      (post: ValueAlignedPost) => post.onchain
-    );
+    const value_aligned_posts = trustpool.cultureBook.value_aligned_posts.filter((post: ValueAlignedPost) => !post.onchain).filter((post: ValueAlignedPost) => post.eligibleForVoting);
+    
+    
     
     return NextResponse.json({
       status: 200,
       data: {
         posts: value_aligned_posts,
-        // TODO: Add real tokenomics fields to the response
-        ticker: "test",
-        tokenPrice: "100",
       },
     });
   } catch (error) {

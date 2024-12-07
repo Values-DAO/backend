@@ -133,6 +133,16 @@ const userSchema = new Schema(
       type: [String],
       default: [],
     },
+    
+    rewards: [ // an array of culture tokens and their amount
+      {
+        token: {
+          type: Schema.Types.ObjectId,
+          ref: "CultureToken",
+        },
+        amount: { type: Number },
+      },
+    ]
   },
 
   {timestamps: true}

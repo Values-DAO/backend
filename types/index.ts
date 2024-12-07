@@ -94,11 +94,25 @@ export enum SourceEnum {
 }
 
 export interface ValueAlignedPost {
+  _id: Schema.Types.ObjectId;
 	posterUsername: string;
 	content: string;
 	timestamp: Date;
 	title: string;
 	source: SourceEnum;
+  onchain: boolean;
+  eligibleForVoting: boolean;
+  votes: {
+    count: number;
+    alignedUsers: {
+      userId: string;
+    }[];
+    notAlignedUsers: {
+      userId: string;
+    }[];
+  };
+  transactionHash?: string;
+  ipfsHash?: string;
 }
 
 export interface TopPoster {

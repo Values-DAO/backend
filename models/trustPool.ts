@@ -51,8 +51,12 @@ const trustPoolSchema = new Schema({
   cultureBotCommunity: {
     type: Schema.Types.ObjectId,
     ref: "CultureBotCommunity",
+  },
+  // * Culture Token
+  cultureToken: {
+    type: Schema.Types.ObjectId,
+    ref: "CultureToken",
   }
-  // TODO: Add tokenomics ref
   // createdAt: {
   //   type: Date,
   //   default: Date.now,

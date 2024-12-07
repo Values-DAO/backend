@@ -60,7 +60,12 @@ export async function POST(req: Request) {
         core_values: trustpool.cultureBook.core_values,
         spectrum: trustpool.cultureBook.spectrum,
       });
-
+      
+      // value_aligned_posts.forEach((post) => {
+      //   post.onchain = false;
+      //   post.votes.count = 0;
+      // })
+      
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);
 
@@ -89,6 +94,11 @@ export async function POST(req: Request) {
         core_values: trustpool.cultureBook.core_values,
         spectrum: trustpool.cultureBook.spectrum,
       });
+      
+      // value_aligned_posts.forEach((post) => {
+      //   post.onchain = false;
+      //   post.votes.count = 0;
+      // })
 
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);

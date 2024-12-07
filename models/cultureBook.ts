@@ -11,6 +11,11 @@ const cultureBookSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "CultureBotCommunity"
   },
+  // * Culture Token
+  cultureToken: {
+    type: Schema.Types.ObjectId,
+    ref: "CultureToken",
+  },
   // * Content for the Culture Book
   core_values: {
     type: Map,
@@ -35,6 +40,34 @@ const cultureBookSchema = new Schema({
         timestamp: { type: Date, required: true },
         title: { type: String, required: true },
         source: { type: String, enum: ["Twitter", "Youtube", "Farcaster", "Telegram"], required: true },
+        onchain: { type: Boolean, default: false },
+        eligibleForVoting: { type: Boolean, default: true },
+        votes: { 
+          type: {
+            count: { type: Number },
+            alignedUsers: [
+              {
+                type: {
+                  userId: { type: String, required: true },
+                },
+              },
+            ],
+            notAlignedUsers: [
+              {
+                type: {
+                  userId: { type: String, required: true },
+                },
+              },
+            ],
+          },
+          default: {
+            count: 0,
+            alignedUsers: [],
+            notAlignedUsers: [],
+          },
+        },
+        transactionHash: { type: String },
+        ipfsHash: { type: String },
       },
       default: [],
     },
