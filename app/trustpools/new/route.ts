@@ -6,8 +6,20 @@ import CultureBook from "@/models/cultureBook";
 import CultureToken from "@/models/cultureToken";
 
 export async function POST(req: Request) {
-	const {name, description, logo, communityLink, twitterHandle, farcasterHandle, organizerTwitterHandle, userId, tokenName, tokenSymbol, curatorTreasuryAllocation, treasuryAllocation} = await req.json()
-
+	const {
+    name,
+    description,
+    logo,
+    communityLink,
+    twitterHandle,
+    farcasterHandle,
+    organizerTwitterHandle,
+    userId,
+    tokenName,
+    tokenSymbol,
+    treasuryAllocation,
+  } = await req.json();
+	
 	if (!name || !userId) {
 		return NextResponse.json({
 			status: 400,
@@ -42,10 +54,9 @@ export async function POST(req: Request) {
 		})
 		
 		const cultureToken = await CultureToken.create({
-			tokenName,
-			tokenSymbol,
+			name: tokenName,
+			symbol: tokenSymbol,
 			allocationAddress: {
-				curatorTreasuryAllocation,
 				treasuryAllocation,
 			},
 		})
@@ -63,8 +74,6 @@ export async function POST(req: Request) {
 		await cultureBook.save()
 		await cultureToken.save()
 		
-		// TODO: Call smart contract here
-
 		if (!user.trustPools) {
 			user.trustPools = []; // Initialize if the field doesn't exist
 		}

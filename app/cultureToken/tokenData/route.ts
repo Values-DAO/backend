@@ -31,8 +31,8 @@ export async function GET(req: Request) {
       status: 200,
       data: {
         tokenData: {
-          tokenName: trustPool.cultureToken.tokenName,
-          tokenSymbol: trustPool.cultureToken.tokenSymbol,
+          tokenName: trustPool.cultureToken.name,
+          tokenSymbol: trustPool.cultureToken.symbol,
         },
       },
     });

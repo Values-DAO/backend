@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.12.2",
     "@privy-io/react-auth": "^1.81.1",
     "@privy-io/wagmi": "^0.2.12",
     "@radix-ui/react-dialog": "^1.1.1",

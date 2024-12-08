@@ -4,6 +4,7 @@ import '@/models/cultureBotCommunity';
 import '@/models/trustPool';
 import '@/models/cultureBook';
 import '@/models/user';
+import '@/models/cultureToken';
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
