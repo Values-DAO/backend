@@ -5,8 +5,6 @@ export const generateCommunityValues = async (
 	messages: CultureBotMessage[]
 ): Promise<GenerateCommunityValuesResponse> => {
 	const content = JSON.stringify(messages);
-
-  
 	const openai = new OpenAI({
 		apiKey: process.env.OPENAI_API_KEY,
 	});
@@ -121,7 +119,7 @@ interface GenerateCommunityValuesResponse {
 
 CRITICAL RULES:
 - Output must be valid JSON
-- Include all 5 sections (core_values, spectrum, value_aligned_posts, top_posters, description)
+- Include all sections (core_values, spectrum)
 - Use only actual usernames and message content, not fabricated examples
 - No explanatory text outside JSON
 - No empty or null fields
@@ -136,8 +134,6 @@ CRITICAL RULES:
 
 		res = JSON.parse(res!);
 		
-		console.log(res)
-    
 		return {
 			core_values: res.core_values,
 			spectrum: res.spectrum,

@@ -5,9 +5,9 @@ import { NextResponse } from "next/server";
 import { generateCommunityValues } from "@/lib/generate-community-values";
 import { updateCommunityValues } from "@/lib/update-community-values";
 
-// * This route will generate the community values for a given community.
-// * If it is for the first time then it will generate the values and save them to the trustpool.
-// * If not then it will run the update prompt and update the content.
+// * This route will generate the community values for a given community for the first time 
+// * it is called for a community. It will also extract the value-aligned posts from the chat history.
+// * For subsequent calls, it will only extract the value-aligned posts from the chat history.
 
 export async function POST(req: Request) {
 	// get trustpoolId from the request body
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 	try {
     await connectToDatabase();
     const trustpool = await TrustPools.findById(trustPoolId).populate("cultureBook")
-    console.log(trustpool)
+    console.log("Trust Pool Name: ", trustpool.name)
 
     if (!trustpool) {
       return NextResponse.json({
@@ -53,6 +53,7 @@ export async function POST(req: Request) {
     // TODO: Remove this after testing!!
     const slicedMessages = messages.slice(-100)
     
+    // Check if the community values have already been generated
     if (trustpool.cultureBook.core_values && trustpool.cultureBook.core_values.size > 0) {
       // Update the values
       const { value_aligned_posts } = await updateCommunityValues({
@@ -61,14 +62,11 @@ export async function POST(req: Request) {
         spectrum: trustpool.cultureBook.spectrum,
       });
       
-      // value_aligned_posts.forEach((post) => {
-      //   post.onchain = false;
-      //   post.votes.count = 0;
-      // })
-      
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);
-
+      
+      console.log("Value aligned posts for trustpool ", trustpool.name, " are: ", value_aligned_posts);
+      
       // Save the updated CultureBook
       await trustpool.cultureBook.save();
 
@@ -85,8 +83,9 @@ export async function POST(req: Request) {
 
       trustpool.cultureBook.core_values = core_values;
       trustpool.cultureBook.spectrum = spectrum;
-
-      // await trustpool.cultureBook.save();
+      
+      console.log("Core values for trustpool ", trustpool.name, " are: ", core_values)
+      console.log("Spectrum for trustpool ", trustpool.name, " is: ", spectrum)
 
       // Update the values
       const { value_aligned_posts } = await updateCommunityValues({
@@ -95,14 +94,11 @@ export async function POST(req: Request) {
         spectrum: trustpool.cultureBook.spectrum,
       });
       
-      // value_aligned_posts.forEach((post) => {
-      //   post.onchain = false;
-      //   post.votes.count = 0;
-      // })
-
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);
-
+      
+      console.log("Value aligned posts for trustpool ", trustpool.name, " are: ",  value_aligned_posts)
+      
       // Save the updated CultureBook
       await trustpool.cultureBook.save();
 

@@ -27,7 +27,7 @@ export const updateCommunityValues = async ({
         {
           role: "system",
           content: `
-You are a value analyst tasked with predicting and updating a community’s values based on their chat history. Your task is to analyze the provided new chat history, compare it with the existing core values and spectra, and update these fields accordingly. Additionally, identify recent top posters and posts that explicitly demonstrate core values. Finally, provide an overall short description of where the community’s culture is moving based on changes.
+You are a value analyst tasked with analyzing a community’s values based on their chat history. Your task is to analyze the provided new chat history, compare it with the existing core values and spectra, and update these fields accordingly. Additionally, identify recent top posters and posts that explicitly demonstrate core values. Finally, provide an overall short description of where the community’s culture is moving based on changes.
           
 First, here is the fixed set of human values you should consider:
 
@@ -131,7 +131,7 @@ interface GenerateCommunityValuesResponse {
 
 CRITICAL RULES:
 - Output must be valid JSON
-- Include all 5 sections (core_values, spectrum, value_aligned_posts, top_posters, description)
+- Include value_aligned_posts 
 - Use only actual usernames and message content, not fabricated examples
 - No explanatory text outside JSON
 - No empty or null fields
@@ -144,8 +144,6 @@ CRITICAL RULES:
 
     res = JSON.parse(res!);
     
-    console.log(res)
-
     return {
       value_aligned_posts: res.value_aligned_posts,
     };

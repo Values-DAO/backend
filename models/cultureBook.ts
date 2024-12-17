@@ -72,14 +72,6 @@ const cultureBookSchema = new Schema({
       default: [],
     },
   ],
-  top_posters: [
-    {
-      type: {
-        username: { type: String, required: true },
-      },
-      default: [],
-    },
-  ],
   updateDescription: {
     type: {
       content: { type: String, required: true },
