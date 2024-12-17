@@ -43,15 +43,31 @@ export async function POST(req: Request) {
         message: "Community not found",
       });
     }
-
-    const messages = community.messages.map((message: Message) => ({
+    
+    // // TODO: Remove this after testing!!
+    // const slicedMessages = messages.slice(-100)
+    
+    // Get current time
+    const now = new Date();
+    
+    // Calculate last week
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(now.getDate() - 7);
+    
+    const filteredMessages = community.messages.filter((message: Message) => {
+      const messageDate = new Date(message.createdAt);
+      return messageDate >= oneWeekAgo;
+    });
+    
+    const messages = filteredMessages.map((message: Message) => ({
       text: message.text,
       senderUsername: message.senderUsername,
       createdAt: message.createdAt,
     }));
+
+    const slicedMessages = messages
     
-    // TODO: Remove this after testing!!
-    const slicedMessages = messages.slice(-100)
+    console.log(messages.length, " messages found in the last week for trustpool ", trustpool.name);
     
     // Check if the community values have already been generated
     if (trustpool.cultureBook.core_values && trustpool.cultureBook.core_values.size > 0) {
@@ -111,6 +127,13 @@ export async function POST(req: Request) {
         },
       });
     }
+    // return NextResponse.json({
+    //   status: 200,
+    //   message: "test worked",
+    //   data: {
+    //     value_aligned_posts: [],
+    //   },
+    // });
   } catch (error) {
 		console.error("Error generating community values (GET /cultureCommunity): ", error);
 		return NextResponse.json({
