@@ -46,6 +46,9 @@ export async function GET(req: Request) {
       (post: ValueAlignedPost) => post.onchain
     );
     
+    // reverse the order of the posts so the most recent post is first
+    value_aligned_posts.reverse();
+    
     return NextResponse.json({
       status: 200,
       data: {
