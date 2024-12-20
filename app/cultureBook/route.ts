@@ -54,6 +54,7 @@ export async function GET(req: Request) {
       data: {
         posts: value_aligned_posts,
         trustPoolName: trustpool.name,
+        telegramChannel: trustpool.communityLink,
         // TODO: Add real tokenomics fields to the response
         ticker: "test",
         tokenPrice: "100",
