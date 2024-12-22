@@ -19,7 +19,7 @@ export const generateCommunityValues = async (
           content: `
 You are a value analyst tasked with predicting a community's values based on their chat history. Your task is to thoroughly analyze the chat history provided, identify the community's core values, and rate its alignment with predefined spectra. Your output should strictly follow the JSON format provided.
 
-First, here is the fixed set of human values you should consider:
+First, here is the fixed set of human values you should consider, do not consider any other values apart from this:
 
 <values>
 [
@@ -81,6 +81,7 @@ Your task is to analyze this data and provide output in 2 key areas:
 - Identify values from the provided list that appear in messages
 - Assign a weight (1-100) to each value based on frequency and emphasis
 - Output format is shown below (core_values)
+- Restrict the values to 5 core values. If there is no valuable content, return less core values but don't fake it.
 
 2. SPECTRUM ANALYSIS
 Rate the community on these spectrums (1-100, where 1 = left term, 100 = right term):
@@ -118,11 +119,13 @@ interface GenerateCommunityValuesResponse {
 }
 
 CRITICAL RULES:
+- Have strong precision and low recall, I don't want any false positives
 - Output must be valid JSON
 - Include all sections (core_values, spectrum)
-- Use only actual usernames and message content, not fabricated examples
+- Use only actual usernames and message content, not fabricated examples at all
 - No explanatory text outside JSON
 - No empty or null fields
+- Do not hesitate to return less content if there is no valuable content
 `,
         },
       ],
@@ -133,6 +136,8 @@ CRITICAL RULES:
 			.replace("```", "");
 
 		res = JSON.parse(res!);
+    
+    console.log(res)
 		
 		return {
 			core_values: res.core_values,
