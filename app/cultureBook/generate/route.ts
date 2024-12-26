@@ -51,7 +51,8 @@ export async function POST(req: Request) {
       createdAt: message.createdAt,
     }));
 
-    const slicedMessages = messages[-100]
+    const slicedMessages = messages.slice(-100)
+    
     
     // Time limit message screening
     // // Get current time
@@ -77,6 +78,7 @@ export async function POST(req: Request) {
     // console.log(messages.length, "messages found in the last week for trustpool", trustpool.name);
     
     // Check if the community values have already been generated
+    
     if (trustpool.cultureBook.core_values && trustpool.cultureBook.core_values.size > 0) {
       // Update the values
       const { value_aligned_posts } = await extractValueAlignedPosts({
