@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       createdAt: message.createdAt,
     }));
 
-    const slicedMessages = messages
+    const slicedMessages = messages[-100]
     
     console.log(messages.length, "messages found in the last week for trustpool", trustpool.name);
     
