@@ -43,8 +43,6 @@ export async function POST(req: Request) {
           continue
         }
         
-        console.log("Storing ", post.content, " on IPFS.")
-        
         // now store it on ipfs and then onchain
         const response = await storeMessageOnIpfs(post.content);
 

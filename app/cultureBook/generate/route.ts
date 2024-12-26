@@ -45,28 +45,7 @@ export async function POST(req: Request) {
     }
     
     // All messages
-    // const messages = community.messages.map((message: Message) => ({
-    //   text: message.text,
-    //   senderUsername: message.senderUsername,
-    //   createdAt: message.createdAt,
-    // }));
-
-    // const slicedMessages = messages
-    
-    // Time limit message screening
-    // Get current time
-    const now = new Date();
-    
-    // Calculate last week
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(now.getDate() - 7);
-    
-    const filteredMessages = community.messages.filter((message: Message) => {
-      const messageDate = new Date(message.createdAt);
-      return messageDate >= oneWeekAgo;
-    });
-    
-    const messages = filteredMessages.map((message: Message) => ({
+    const messages = community.messages.map((message: Message) => ({
       text: message.text,
       senderUsername: message.senderUsername,
       createdAt: message.createdAt,
@@ -74,7 +53,28 @@ export async function POST(req: Request) {
 
     const slicedMessages = messages[-100]
     
-    console.log(messages.length, "messages found in the last week for trustpool", trustpool.name);
+    // Time limit message screening
+    // // Get current time
+    // const now = new Date();
+    
+    // // Calculate last week
+    // const oneWeekAgo = new Date();
+    // oneWeekAgo.setDate(now.getDate() - 7);
+    
+    // const filteredMessages = community.messages.filter((message: Message) => {
+    //   const messageDate = new Date(message.createdAt);
+    //   return messageDate >= oneWeekAgo;
+    // });
+    
+    // const messages = filteredMessages.map((message: Message) => ({
+    //   text: message.text,
+    //   senderUsername: message.senderUsername,
+    //   createdAt: message.createdAt,
+    // }));
+
+    // const slicedMessages = messages
+    
+    // console.log(messages.length, "messages found in the last week for trustpool", trustpool.name);
     
     // Check if the community values have already been generated
     if (trustpool.cultureBook.core_values && trustpool.cultureBook.core_values.size > 0) {
@@ -85,8 +85,6 @@ export async function POST(req: Request) {
       
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);
-      
-      console.log("Value aligned posts for trustpool ", trustpool.name, " are: ", value_aligned_posts);
       
       // Save the updated CultureBook
       await trustpool.cultureBook.save();
@@ -105,9 +103,6 @@ export async function POST(req: Request) {
       trustpool.cultureBook.core_values = core_values;
       trustpool.cultureBook.spectrum = spectrum;
       
-      console.log("Core values for trustpool ", trustpool.name, " are: ", core_values)
-      console.log("Spectrum for trustpool ", trustpool.name, " is: ", spectrum)
-
       // Update the values
       const { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
@@ -115,8 +110,6 @@ export async function POST(req: Request) {
       
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);
-      
-      console.log("Value aligned posts for trustpool ", trustpool.name, " are: ",  value_aligned_posts)
       
       // Save the updated CultureBook
       await trustpool.cultureBook.save();

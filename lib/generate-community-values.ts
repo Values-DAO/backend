@@ -137,8 +137,6 @@ CRITICAL RULES:
 
 		res = JSON.parse(res!);
     
-    console.log(res)
-		
 		return {
 			core_values: res.core_values,
 			spectrum: res.spectrum,
