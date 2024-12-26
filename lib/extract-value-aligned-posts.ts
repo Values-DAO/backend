@@ -27,6 +27,8 @@ Here is the chat history from a community you need to analyze:
 ${newMessages}
 </messages>
 
+Ignore any messages from culturepadbot or culturepadtestbot.
+
 Your task is to analyze this data and provide output in the following key area:
 
 1. VALUE-ALIGNED POSTS
