@@ -3,7 +3,7 @@ import TrustPools from "@/models/trustPool";
 import connectToDatabase from "@/lib/connect-to-database";
 import { NextResponse } from "next/server";
 import { generateCommunityValues } from "@/lib/generate-community-values";
-import { updateCommunityValues } from "@/lib/update-community-values";
+import { extractValueAlignedPosts } from "@/lib/extract-value-aligned-posts";
 
 // * This route will generate the community values for a given community for the first time 
 // * it is called for a community. It will also extract the value-aligned posts from the chat history.
@@ -44,9 +44,16 @@ export async function POST(req: Request) {
       });
     }
     
-    // // TODO: Remove this after testing!!
-    // const slicedMessages = messages.slice(-100)
+    // All messages
+    // const messages = community.messages.map((message: Message) => ({
+    //   text: message.text,
+    //   senderUsername: message.senderUsername,
+    //   createdAt: message.createdAt,
+    // }));
+
+    // const slicedMessages = messages
     
+    // Time limit message screening
     // Get current time
     const now = new Date();
     
@@ -72,10 +79,8 @@ export async function POST(req: Request) {
     // Check if the community values have already been generated
     if (trustpool.cultureBook.core_values && trustpool.cultureBook.core_values.size > 0) {
       // Update the values
-      const { value_aligned_posts } = await updateCommunityValues({
+      const { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
-        core_values: trustpool.cultureBook.core_values,
-        spectrum: trustpool.cultureBook.spectrum,
       });
       
       // Update the CultureBook fields
@@ -104,10 +109,8 @@ export async function POST(req: Request) {
       console.log("Spectrum for trustpool ", trustpool.name, " is: ", spectrum)
 
       // Update the values
-      const { value_aligned_posts } = await updateCommunityValues({
+      const { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
-        core_values: trustpool.cultureBook.core_values,
-        spectrum: trustpool.cultureBook.spectrum,
       });
       
       // Update the CultureBook fields
@@ -127,13 +130,6 @@ export async function POST(req: Request) {
         },
       });
     }
-    // return NextResponse.json({
-    //   status: 200,
-    //   message: "test worked",
-    //   data: {
-    //     value_aligned_posts: [],
-    //   },
-    // });
   } catch (error) {
 		console.error("Error generating community values (GET /cultureCommunity): ", error);
 		return NextResponse.json({

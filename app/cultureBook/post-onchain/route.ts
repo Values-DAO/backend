@@ -47,7 +47,7 @@ export async function POST(req: Request) {
         const response = await storeMessageOnIpfs(post.content);
 
         if (!response) {
-          await console.error("Error storing message on IPFS. Please try again.");
+          console.error("Error storing message on IPFS. Please try again.");
           return NextResponse.json({
             status: 500,
             error: "Error storing message on IPFS. Please try again.",

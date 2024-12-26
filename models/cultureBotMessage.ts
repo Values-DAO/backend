@@ -4,7 +4,6 @@ const cultureBotMessageSchema = new Schema(
   {
     text: {
       type: String,
-      required: true,
     },
     senderUsername: {
       type: String,
