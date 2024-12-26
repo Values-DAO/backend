@@ -82,6 +82,7 @@ export async function POST(req: Request) {
       const { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
       });
+      console.log("Value Aligned Posts extracted successfully.")
       
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);
@@ -99,6 +100,7 @@ export async function POST(req: Request) {
     } else {
       // Generate the values
       const { core_values, spectrum } = await generateCommunityValues(slicedMessages);
+      console.log("Generated Core Values and Spectrum successfully.");
 
       trustpool.cultureBook.core_values = core_values;
       trustpool.cultureBook.spectrum = spectrum;
@@ -107,6 +109,7 @@ export async function POST(req: Request) {
       const { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
       });
+      console.log("Value Aligned Posts extracted successfully.");
       
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);
