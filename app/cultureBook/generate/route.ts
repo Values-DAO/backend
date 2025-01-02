@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     //   createdAt: message.createdAt,
     // }));
 
-    // const slicedMessages = messages.slice(-100)
+    // const slicedMessages = messages
     
     
     // Time limit message screening
@@ -83,6 +83,7 @@ export async function POST(req: Request) {
       // Update the values
       const { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
+        spectrum: trustpool.cultureBook.spectrum,
       });
       console.log("Value Aligned Posts extracted successfully.")
       
@@ -110,6 +111,7 @@ export async function POST(req: Request) {
       // Update the values
       const { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
+        spectrum,
       });
       console.log("Value Aligned Posts extracted successfully.");
       
@@ -125,6 +127,7 @@ export async function POST(req: Request) {
         data: {
           core_values,
           spectrum,
+          value_aligned_posts,
         },
       });
     }
