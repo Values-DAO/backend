@@ -54,16 +54,16 @@ const cultureTokenSchema = new Schema(
     allocationAmount: {
       type: [
         {
-          curatorTreasuryAllocation: { type: Number, required: true, default: 5000000000 },
-          treasuryAllocation: { type: Number, required: true, default: 4000000000 },
-          adminTreasuryAllocation: { type: Number, required: true, default: 1000000000 },
+          curatorTreasuryAllocation: { type: Number, required: true, default: 5000000000000000000000000000 }, // 5 billion
+          treasuryAllocation: { type: Number, required: true, default: 4000000000000000000000000000 }, // 4 billion
+          adminTreasuryAllocation: { type: Number, required: true, default: 1000000000000000000000000000 }, // 1 billion
         },
       ],
     },
     maximumSupply: {
       type: Number,
       required: true,
-      default: 100000000000, // 100 billion
+      default: 100000000000000000000000000000, // 100 billion
     },
   },
   { timestamps: true }

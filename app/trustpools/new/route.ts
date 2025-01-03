@@ -15,9 +15,11 @@ export async function POST(req: Request) {
     farcasterHandle,
     organizerTwitterHandle,
     userId,
-    // tokenName,
-    // tokenSymbol,
-    // treasuryAllocation,
+    tokenName,
+    tokenSymbol,
+    curatorTreasuryAllocation,
+    tokenAddress,
+    bondingCurveAddress,
   } = await req.json();
 	
 	if (!name || !userId) {
@@ -53,26 +55,28 @@ export async function POST(req: Request) {
 			},
 		})
 		
-		// const cultureToken = await CultureToken.create({
-		// 	name: tokenName,
-		// 	symbol: tokenSymbol,
-		// 	allocationAddress: {
-		// 		treasuryAllocation,
-		// 	},
-		// })
+		const cultureToken = await CultureToken.create({
+      name: tokenName,
+      symbol: tokenSymbol,
+      tokenAddress,
+      bondingCurveAddress,
+      allocationAddress: {
+        curatorTreasuryAllocation,
+      },
+    });
 		
 		// Link the trust pool, culture book, and culture token together
-		// cultureBook.cultureToken = cultureToken._id
+		cultureBook.cultureToken = cultureToken._id
 		cultureBook.trustPool = trustpool._id
-		// cultureToken.trustPool = trustpool._id
-		// cultureToken.cultureBook = cultureBook._id
-		// trustpool.cultureToken = cultureToken._id
+		cultureToken.trustPool = trustpool._id
+		cultureToken.cultureBook = cultureBook._id
+		trustpool.cultureToken = cultureToken._id
 		trustpool.cultureBook = cultureBook._id
 		
 		// Save the trust pool, culture book, and culture token
 		await trustpool.save()
 		await cultureBook.save()
-		// await cultureToken.save()
+		await cultureToken.save()
 		
 		if (!user.trustPools) {
 			user.trustPools = []; // Initialize if the field doesn't exist

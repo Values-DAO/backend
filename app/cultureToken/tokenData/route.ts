@@ -33,6 +33,8 @@ export async function GET(req: Request) {
         tokenData: {
           tokenName: trustPool.cultureToken.name,
           tokenSymbol: trustPool.cultureToken.symbol,
+          tokenAddress: trustPool.cultureToken.tokenAddress,
+          bondingCurveAddress: trustPool.cultureToken.bondingCurveAddress,
         },
       },
     });
