@@ -9,7 +9,7 @@ const cultureBookSchema = new Schema({
   // * Culture Bot Community
   cultureBotCommunity: {
     type: Schema.Types.ObjectId,
-    ref: "CultureBotCommunity"
+    ref: "CultureBotCommunity",
   },
   // * Culture Token
   cultureToken: {
@@ -36,13 +36,13 @@ const cultureBookSchema = new Schema({
     {
       type: {
         posterUsername: { type: String, required: true },
-        content: { type: String, required: true },
+        content: { type: String },
         timestamp: { type: Date, required: true },
         title: { type: String, required: true },
         source: { type: String, enum: ["Twitter", "Youtube", "Farcaster", "Telegram"], required: true },
         onchain: { type: Boolean, default: false },
         eligibleForVoting: { type: Boolean, default: true },
-        votes: { 
+        votes: {
           type: {
             count: { type: Number },
             alignedUsers: [
@@ -68,6 +68,12 @@ const cultureBookSchema = new Schema({
         },
         transactionHash: { type: String },
         ipfsHash: { type: String },
+        hasPhoto: {
+          type: Boolean,
+          default: false,
+        },
+        photoUrl: String, // IPFS Pinata URL
+        photoFileId: String, // Telegram File ID to refetch the image when needed
       },
       default: [],
     },

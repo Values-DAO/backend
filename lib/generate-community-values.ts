@@ -17,9 +17,9 @@ export const generateCommunityValues = async (
         {
           role: "system",
           content: `
-You are a value analyst tasked with predicting a community's values based on their chat history. Your task is to thoroughly analyze the chat history provided, identify the community's core values, and rate its alignment with predefined spectra. Your output should strictly follow the JSON format provided.
+You are an AI tasked with analyzing the chat history of a community to extract its core values and identify value-aligned behavior. Use the provided context about the project and community to guide your analysis. Your output should strictly follow the JSON format provided.
 
-First, here is the fixed set of human values you should consider:
+First, here is the fixed set of human values you should consider, do not consider any other values apart from this:
 
 <values>
 [
@@ -81,6 +81,7 @@ Your task is to analyze this data and provide output in 2 key areas:
 - Identify values from the provided list that appear in messages
 - Assign a weight (1-100) to each value based on frequency and emphasis
 - Output format is shown below (core_values)
+- Restrict the values to 5 core values. If there is no valuable content, return less core values but don't fake it.
 
 2. SPECTRUM ANALYSIS
 Rate the community on these spectrums (1-100, where 1 = left term, 100 = right term):
@@ -118,11 +119,13 @@ interface GenerateCommunityValuesResponse {
 }
 
 CRITICAL RULES:
-- Output must be valid JSON
-- Include all sections (core_values, spectrum)
-- Use only actual usernames and message content, not fabricated examples
-- No explanatory text outside JSON
-- No empty or null fields
+- Have strong precision and low recall, I don't want any false positives in the output.
+- Output must be valid JSON.
+- Include all sections (core_values, spectrum).
+- Use only actual usernames and message content, not fabricated examples at all.
+- No explanatory text outside JSON.
+- No empty or null fields.
+- Do not hesitate to return core values if the message content is not valuable.
 `,
         },
       ],
@@ -133,7 +136,7 @@ CRITICAL RULES:
 			.replace("```", "");
 
 		res = JSON.parse(res!);
-		
+    
 		return {
 			core_values: res.core_values,
 			spectrum: res.spectrum,
