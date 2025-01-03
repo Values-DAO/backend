@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     }
     
     for (const trustpool of trustpools) {
-      console.log(trustpool)
+      console.log("Processing trustpool: ", trustpool.name);
       if (!trustpool.cultureBook) {
         return NextResponse.json({
           status: 404,
@@ -40,6 +40,7 @@ export async function POST(req: Request) {
         // first check if the post is eligible to be posted onchain
         if (post.votes.count < 0) {
           post.eligibleForVoting = false;
+          console.log(`Post ${post._id} not eligible for voting. Skipping...`);
           continue
         }
         
@@ -62,10 +63,13 @@ export async function POST(req: Request) {
         post.onchain = true;
         post.eligibleForVoting = false;
         
+        console.log(`Post ${post._id} successfully posted onchain`);
+        
         // TODO: Give rewards to the user whose post went onchain
       }
         
       await trustpool.cultureBook.save();
+      console.log(`Culture book data for trustpool ${trustpool.name} successfully updated`);
     }
       
       return NextResponse.json({
