@@ -113,6 +113,12 @@ export interface ValueAlignedPost {
   };
   transactionHash?: string;
   ipfsHash?: string;
+  votingEndsAt?: Date;
+  hasPhoto: boolean;
+  photoUrl?: string;
+  photoFileId?: string;
+  status?: string;
+  pollId?: string;
 }
 
 export interface TopPoster {

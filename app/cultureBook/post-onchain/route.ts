@@ -34,7 +34,8 @@ export async function POST(req: Request) {
         });
       }
       
-      const value_aligned_posts = trustpool.cultureBook.value_aligned_posts.filter((post: ValueAlignedPost) => !post.onchain).filter((post: ValueAlignedPost) => post.eligibleForVoting)
+      // don't consider the posts that have a votingEndsAt field cause that is to be decided by the poll
+      const value_aligned_posts = trustpool.cultureBook.value_aligned_posts.filter((post: ValueAlignedPost) => !post.onchain).filter((post: ValueAlignedPost) => post.eligibleForVoting).filter((post: ValueAlignedPost) => !post.votingEndsAt);
         
       for (const post of value_aligned_posts) {
         // first check if the post is eligible to be posted onchain
