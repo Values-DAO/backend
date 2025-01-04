@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 	try {
     await connectToDatabase();
     const trustpool = await TrustPools.findById(trustPoolId).populate("cultureBook")
-    console.log("Trust Pool Name: ", trustpool.name)
+    console.log("AI extracting for Trust Pool: ", trustpool.name)
 
     if (!trustpool) {
       return NextResponse.json({
@@ -71,6 +71,7 @@ export async function POST(req: Request) {
       text: message.text,
       senderUsername: message.senderUsername,
       createdAt: message.createdAt,
+      messageTgId: message?.messageTgId,
     }));
 
     let slicedMessages = messages
@@ -95,7 +96,7 @@ export async function POST(req: Request) {
     // Check if the community values have already been generated
     if (trustpool.cultureBook.core_values && trustpool.cultureBook.core_values.size > 0) {
       // Update the values
-      console.log(`Community values already generated. Updating the values for ${trustpool.name}...`);
+      console.log(`Community values already generated. Updating the posts for ${trustpool.name}...`);
       let { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
         spectrum: trustpool.cultureBook.spectrum,
@@ -149,11 +150,27 @@ export async function POST(req: Request) {
       trustpool.cultureBook.spectrum = spectrum;
       
       // Update the values
-      const { value_aligned_posts } = await extractValueAlignedPosts({
+      let { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
         spectrum,
       });
-      console.log("Value Aligned Posts extracted successfully.");
+      
+      if (value_aligned_posts.length === 0) {
+        return NextResponse.json({
+          status: 200,
+          message: "No new value aligned posts found",
+          data: {
+            value_aligned_posts,
+          },
+        });
+      } else {
+        console.log(`${value_aligned_posts.length} Value Aligned Posts extracted successfully.`);
+      }
+
+      // remove duplicates from the value_aligned_posts array
+      value_aligned_posts = Array.from(new Set(value_aligned_posts.map((post) => JSON.stringify(post)))).map((post) =>
+        JSON.parse(post)
+      );
       
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);

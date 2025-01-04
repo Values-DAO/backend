@@ -4,6 +4,7 @@ import { Schema, model, Document, models } from "mongoose";
 interface Message extends Document {
   text: string;
   senderUsername: string;
+  messageTgId?: string;
   createdAt: Date;
   senderTgId: string;
   transactionHash?: string;

@@ -96,6 +96,7 @@ export enum SourceEnum {
 export interface ValueAlignedPost {
   _id: Schema.Types.ObjectId;
 	posterUsername: string;
+  messageTgId?: string;
 	content: string;
 	timestamp: Date;
 	title: string;

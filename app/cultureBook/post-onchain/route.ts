@@ -45,6 +45,21 @@ export async function POST(req: Request) {
           continue
         }
         
+        // now the message is eligible for posting onchain
+        // need to avoid duplication, so if the post already exists onchain, skip it
+        // onchain posts have onchain field set to true
+        // check messages by messageTgId
+        const existingPost = trustpool.cultureBook.value_aligned_posts.find(
+          (p: ValueAlignedPost) => p?.messageTgId && p?.messageTgId === post?.messageTgId && p.onchain
+        );
+        
+        if (existingPost) {
+          post.onchain = false;
+          post.eligibleForVoting = false;
+          console.log(`Post ${post._id} already exists onchain. Skipping...`);
+          continue;
+        }
+        
         // now store it on ipfs and then onchain
         const response = await storeMessageOnIpfs(post.content);
 
@@ -65,8 +80,6 @@ export async function POST(req: Request) {
         post.eligibleForVoting = false;
         
         console.log(`Post ${post._id} successfully posted onchain`);
-        
-        // TODO: Give rewards to the user whose post went onchain
       }
         
       await trustpool.cultureBook.save();

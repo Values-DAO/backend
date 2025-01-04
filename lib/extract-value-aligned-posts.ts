@@ -97,6 +97,7 @@ interface ValueAlignedPost {
 	timestamp: Date;
 	title: string;
 	source: SourceEnum;
+  messageTgId: string;
 }
 
 interface GenerateCommunityValuesResponse {
@@ -114,6 +115,7 @@ CRITICAL RULES:
 - Use only actual usernames and message content, not fabricated examples.
 - No explanatory text outside JSON.
 - No empty or null fields.
+- Make sure to include the messageTgId field in the output.
 `,
         },
       ],
