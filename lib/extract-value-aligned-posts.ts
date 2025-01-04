@@ -2,7 +2,7 @@ import type { Message } from "@/models/cultureBotCommunity";
 import type { CoreValue, CultureBotMessage, SpectrumItem, UpdateCommunityValuesResponse } from "@/types";
 import OpenAI from "openai";
 
-export const extractValueAlignedPosts = async ({
+export  const extractValueAlignedPosts = async ({
   messages,
   spectrum,
 }: {
@@ -10,14 +10,15 @@ export const extractValueAlignedPosts = async ({
   spectrum: SpectrumItem[];
 }): Promise<UpdateCommunityValuesResponse> => {
   const newMessages = JSON.stringify(messages);
-
+  const newSpectrum = JSON.stringify(spectrum);
+  
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       temperature: 0.5,
       messages: [
         {
@@ -29,7 +30,7 @@ Exclude messages that do not align with any value spectrums.
 Here is the list of value spectrums of this community you should consider:
 
 <spectrum>
-${spectrum}
+${newSpectrum}
 </spectrum>
 
 Now, here is the chat history from a community you need to analyze:
@@ -96,6 +97,7 @@ interface ValueAlignedPost {
 	timestamp: Date;
 	title: string;
 	source: SourceEnum;
+  messageTgId: string;
 }
 
 interface GenerateCommunityValuesResponse {
@@ -104,6 +106,8 @@ interface GenerateCommunityValuesResponse {
 }
 
 CRITICAL RULES:
+- If there are no value-aligned posts, return an empty array along with an error message saying "No value-aligned posts found."
+- Don't extract the same message twice.
 - Output must be valid JSON.
 - Do not extract messages that are less than 100 characters. Strictly consider messages that are 100 characters or more.
 - Make sure that the poster's username is correct and not jumbled up or fabricated.
@@ -111,14 +115,17 @@ CRITICAL RULES:
 - Use only actual usernames and message content, not fabricated examples.
 - No explanatory text outside JSON.
 - No empty or null fields.
+- Make sure to include the messageTgId field in the output.
 `,
         },
       ],
     });
-
+    
     let res: any = completion.choices[0].message.content?.replace("```json", "").replace("```", "");
 
     res = JSON.parse(res!);
+    
+    console.log(res)
     
     return {
       value_aligned_posts: res.value_aligned_posts,

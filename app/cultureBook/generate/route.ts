@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 	try {
     await connectToDatabase();
     const trustpool = await TrustPools.findById(trustPoolId).populate("cultureBook")
-    console.log("Trust Pool Name: ", trustpool.name)
+    console.log("AI extracting for Trust Pool: ", trustpool.name)
 
     if (!trustpool) {
       return NextResponse.json({
@@ -71,21 +71,53 @@ export async function POST(req: Request) {
       text: message.text,
       senderUsername: message.senderUsername,
       createdAt: message.createdAt,
+      messageTgId: message?.messageTgId,
     }));
 
-    const slicedMessages = messages
+    let slicedMessages = messages
     
-    console.log(messages.length, "messages found in the last week for trustpool", trustpool.name);
+    // return if no messages found
+    if (slicedMessages.length === 0) {
+      return NextResponse.json({
+        status: 404,
+        error: "No messages found in the last week",
+        message: "No messages found in the last week",
+      });
+    }
+    
+    // remove messages that don't have text
+    // @ts-ignore
+    slicedMessages = slicedMessages.filter((message) => message.text);
+    
+    console.log("Messages: ", slicedMessages);
+    
+    console.log(slicedMessages.length, "messages found in the last week for trustpool", trustpool.name);
     
     // Check if the community values have already been generated
-    
     if (trustpool.cultureBook.core_values && trustpool.cultureBook.core_values.size > 0) {
       // Update the values
-      const { value_aligned_posts } = await extractValueAlignedPosts({
+      console.log(`Community values already generated. Updating the posts for ${trustpool.name}...`);
+      let { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
         spectrum: trustpool.cultureBook.spectrum,
       });
-      console.log("Value Aligned Posts extracted successfully.")
+      
+      if (value_aligned_posts.length === 0) {
+        return NextResponse.json({
+          status: 200,
+          message: "No new value aligned posts found",
+          data: {
+            value_aligned_posts,
+          },
+        });
+      } else {
+        console.log(`${value_aligned_posts.length} Value Aligned Posts extracted successfully.`);
+      }
+      
+      // remove duplicates from the value_aligned_posts array
+      value_aligned_posts = Array.from(new Set(value_aligned_posts.map((post) => JSON.stringify(post)))).map((post) =>
+        JSON.parse(post)
+      );
       
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);
@@ -103,17 +135,42 @@ export async function POST(req: Request) {
     } else {
       // Generate the values
       const { core_values, spectrum } = await generateCommunityValues(slicedMessages);
-      console.log("Generated Core Values and Spectrum successfully.");
+      
+      if (core_values.size === 0 || spectrum.length === 0 || !core_values || !spectrum) {
+        return NextResponse.json({
+          status: 404,
+          error: "No community values generated",
+          message: "No community values generated",
+        });
+      } else {
+        console.log("Generated Core Values and Spectrum successfully.");
+      }
 
       trustpool.cultureBook.core_values = core_values;
       trustpool.cultureBook.spectrum = spectrum;
       
       // Update the values
-      const { value_aligned_posts } = await extractValueAlignedPosts({
+      let { value_aligned_posts } = await extractValueAlignedPosts({
         messages: slicedMessages,
         spectrum,
       });
-      console.log("Value Aligned Posts extracted successfully.");
+      
+      if (value_aligned_posts.length === 0) {
+        return NextResponse.json({
+          status: 200,
+          message: "No new value aligned posts found",
+          data: {
+            value_aligned_posts,
+          },
+        });
+      } else {
+        console.log(`${value_aligned_posts.length} Value Aligned Posts extracted successfully.`);
+      }
+
+      // remove duplicates from the value_aligned_posts array
+      value_aligned_posts = Array.from(new Set(value_aligned_posts.map((post) => JSON.stringify(post)))).map((post) =>
+        JSON.parse(post)
+      );
       
       // Update the CultureBook fields
       trustpool.cultureBook.value_aligned_posts.push(...value_aligned_posts);

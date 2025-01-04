@@ -42,9 +42,10 @@ export async function GET(req: Request) {
       });
     }
     
-    const value_aligned_posts = trustpool.cultureBook.value_aligned_posts.filter((post: ValueAlignedPost) => !post.onchain).filter((post: ValueAlignedPost) => post.eligibleForVoting);
-    
-    
+    // don't consider the posts that have a votingEndsAt field cause that is to be decided by the poll
+    // posts that don't have votingEndsAt field are the posts that were extracted by AI
+    // so this route is only for getting those posts that are extracted by AI and have to go onchain
+    const value_aligned_posts = trustpool.cultureBook.value_aligned_posts.filter((post: ValueAlignedPost) => !post.onchain).filter((post: ValueAlignedPost) => post.eligibleForVoting).filter((post: ValueAlignedPost) => !post.votingEndsAt);
     
     return NextResponse.json({
       status: 200,

@@ -96,6 +96,7 @@ export enum SourceEnum {
 export interface ValueAlignedPost {
   _id: Schema.Types.ObjectId;
 	posterUsername: string;
+  messageTgId?: string;
 	content: string;
 	timestamp: Date;
 	title: string;
@@ -113,6 +114,12 @@ export interface ValueAlignedPost {
   };
   transactionHash?: string;
   ipfsHash?: string;
+  votingEndsAt?: Date;
+  hasPhoto: boolean;
+  photoUrl?: string;
+  photoFileId?: string;
+  status?: string;
+  pollId?: string;
 }
 
 export interface TopPoster {

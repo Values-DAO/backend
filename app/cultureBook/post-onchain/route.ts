@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     }
     
     for (const trustpool of trustpools) {
-      console.log(trustpool)
+      console.log("Processing trustpool: ", trustpool.name);
       if (!trustpool.cultureBook) {
         return NextResponse.json({
           status: 404,
@@ -34,13 +34,30 @@ export async function POST(req: Request) {
         });
       }
       
-      const value_aligned_posts = trustpool.cultureBook.value_aligned_posts.filter((post: ValueAlignedPost) => !post.onchain).filter((post: ValueAlignedPost) => post.eligibleForVoting)
+      // don't consider the posts that have a votingEndsAt field cause that is to be decided by the poll
+      const value_aligned_posts = trustpool.cultureBook.value_aligned_posts.filter((post: ValueAlignedPost) => !post.onchain).filter((post: ValueAlignedPost) => post.eligibleForVoting).filter((post: ValueAlignedPost) => !post.votingEndsAt);
         
       for (const post of value_aligned_posts) {
         // first check if the post is eligible to be posted onchain
         if (post.votes.count < 0) {
           post.eligibleForVoting = false;
+          console.log(`Post ${post._id} not eligible for voting. Skipping...`);
           continue
+        }
+        
+        // now the message is eligible for posting onchain
+        // need to avoid duplication, so if the post already exists onchain, skip it
+        // onchain posts have onchain field set to true
+        // check messages by messageTgId
+        const existingPost = trustpool.cultureBook.value_aligned_posts.find(
+          (p: ValueAlignedPost) => p?.messageTgId && p?.messageTgId === post?.messageTgId && p.onchain
+        );
+        
+        if (existingPost) {
+          post.onchain = false;
+          post.eligibleForVoting = false;
+          console.log(`Post ${post._id} already exists onchain. Skipping...`);
+          continue;
         }
         
         // now store it on ipfs and then onchain
@@ -62,10 +79,11 @@ export async function POST(req: Request) {
         post.onchain = true;
         post.eligibleForVoting = false;
         
-        // TODO: Give rewards to the user whose post went onchain
+        console.log(`Post ${post._id} successfully posted onchain`);
       }
         
       await trustpool.cultureBook.save();
+      console.log(`Culture book data for trustpool ${trustpool.name} successfully updated`);
     }
       
       return NextResponse.json({
