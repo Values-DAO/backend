@@ -71,6 +71,8 @@ export async function POST(req: Request) {
     
     cultureToken.prices.push({price: initialPrice});
     cultureToken.marketCaps.push({marketCap: initialMarketCap});
+    cultureToken.chartPrices.push({price: initialPrice, timestamp: new Date().setHours(0, 0, 0, 0)});
+    cultureToken.chartMarketCaps.push({ marketCap: initialMarketCap, timestamp: new Date().setHours(0, 0, 0, 0) });
     
 		// Link the trust pool, culture book, and culture token together
 		cultureBook.cultureToken = cultureToken._id

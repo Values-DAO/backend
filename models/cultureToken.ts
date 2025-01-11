@@ -80,13 +80,22 @@ const cultureTokenSchema = new Schema(
           marketCap: { type: Number, required: true },
           timestamp: { type: Date, default: Date.now },
         },
-      ]
+      ],
     },
     chartPrices: {
       type: [
         {
           price: { type: Number, required: true },
-          timestamp: { type: Date, required: true, default: Date.now },
+          timestamp: { type: Date, default: Date.now },
+        },
+      ],
+      default: [],
+    },
+    chartMarketCaps: {
+      type: [
+        {
+          marketCap: { type: Number, required: true },
+          timestamp: { type: Date, default: Date.now },
         },
       ],
       default: [],
