@@ -27,6 +27,9 @@ export async function GET(req: Request) {
       });
     }
     
+    // get the number of weeks since the trustpool was created
+    const weeksSinceCreation = Math.floor((Date.now() - trustPool.createdAt.getTime()) / (1000 * 60 * 60 * 24 * 7));
+    
     return NextResponse.json({
       status: 200,
       data: {
@@ -34,7 +37,11 @@ export async function GET(req: Request) {
           tokenName: trustPool.cultureToken.name,
           tokenSymbol: trustPool.cultureToken.symbol,
           tokenAddress: trustPool.cultureToken.tokenAddress,
+          description: trustPool.description,
           bondingCurveAddress: trustPool.cultureToken.bondingCurveAddress,
+          marketCap: trustPool.cultureToken.marketCaps.at(-1).marketCap,
+          price: trustPool.cultureToken.prices.at(-1).price,
+          weeksSinceCreation: weeksSinceCreation,
         },
       },
     });

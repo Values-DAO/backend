@@ -4,6 +4,7 @@ import TrustPools from "@/models/trustPool";
 import Users from "@/models/user";
 import CultureBook from "@/models/cultureBook";
 import CultureToken from "@/models/cultureToken";
+import { getEthPriceInUsdc } from "@/lib/services/blockchain";
 
 export async function POST(req: Request) {
 	const {
@@ -64,7 +65,13 @@ export async function POST(req: Request) {
         curatorTreasuryAllocation,
       },
     });
-		
+    
+    const initialPrice = 0.000000000024269; // Initial price of the token in ether
+    const initialMarketCap = initialPrice * 100000000000 // Initial price * 100 bn ether = 2.4269 ETH
+    
+    cultureToken.prices.push({price: initialPrice});
+    cultureToken.marketCaps.push({marketCap: initialMarketCap});
+    
 		// Link the trust pool, culture book, and culture token together
 		cultureBook.cultureToken = cultureToken._id
 		cultureBook.trustPool = trustpool._id
