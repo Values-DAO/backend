@@ -1,7 +1,6 @@
 import connectToDatabase from "@/lib/connect-to-database";
 import Users from "@/models/user";
 import { NextResponse } from "next/server";
-import { Alchemy, Network } from "alchemy-sdk";
 import { ethers } from "ethers";
 
 export async function GET(req: Request) {
