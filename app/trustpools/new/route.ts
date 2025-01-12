@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     });
     
     const initialPrice = 0.000000000024269; // Initial price of the token in ether
-    const initialMarketCap = initialPrice * 100000000000 // Initial price * 100 bn ether = 2.4269 ETH
+    const initialMarketCap = 0 // Initial price * 100 bn ether = 2.4269 ETH
     
     cultureToken.prices.push({price: initialPrice});
     cultureToken.marketCaps.push({marketCap: initialMarketCap});

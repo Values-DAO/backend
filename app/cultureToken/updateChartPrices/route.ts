@@ -78,6 +78,10 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.log("Error updating token price and market cap (POST /cultureToken/updateTokenPriceAndMarketCap):", error);
+    return NextResponse.json({
+      status: 500,
+      error: `Error updating token price and market cap: ${error}`,
+      message: "Error updating token price and market cap",
+    });
   }
-
 }
