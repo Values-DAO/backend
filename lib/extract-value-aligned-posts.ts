@@ -2,7 +2,7 @@ import type { Message } from "@/models/cultureBotCommunity";
 import type { CoreValue, CultureBotMessage, SpectrumItem, UpdateCommunityValuesResponse } from "@/types";
 import OpenAI from "openai";
 
-export  const extractValueAlignedPosts = async ({
+export const extractValueAlignedPosts = async ({
   messages,
   spectrum,
 }: {
@@ -93,6 +93,7 @@ enum SourceEnum {
 
 interface ValueAlignedPost {
 	posterUsername: string;
+  posterTgId: string;
 	content: string;
 	timestamp: Date;
 	title: string;
@@ -115,7 +116,7 @@ CRITICAL RULES:
 - Use only actual usernames and message content, not fabricated examples.
 - No explanatory text outside JSON.
 - No empty or null fields.
-- Make sure to include the messageTgId field in the output.
+- Make sure to include the messageTgId and posterTgId field in the output.
 `,
         },
       ],
