@@ -74,7 +74,8 @@ export async function POST(req: Request) {
       messageTgId: message?.messageTgId,
     }));
 
-    let slicedMessages = messages
+    
+    let slicedMessages = messages.slice(-800, -600)
     
     // return if no messages found
     if (slicedMessages.length === 0) {

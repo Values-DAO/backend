@@ -16,6 +16,8 @@ export async function POST(req: Request) {
       select: "value_aligned_posts",
     })
     
+    console.log("Length of trustpools: ", trustpools.length);
+    
     if (!trustpools) {
       return NextResponse.json({
         status: 404,
@@ -24,14 +26,14 @@ export async function POST(req: Request) {
       });
     }
     
+    let i = 0
     for (const trustpool of trustpools) {
+      console.log(i)
+      i += 1
       console.log("Processing trustpool: ", trustpool.name);
       if (!trustpool.cultureBook) {
-        return NextResponse.json({
-          status: 404,
-          error: "Culture Book not found",
-          message: "Culture Book not found",
-        });
+        console.log("No culture book data found for trustpool: ", trustpool.name);
+        continue
       }
       
       // don't consider the posts that have a votingEndsAt field cause that is to be decided by the poll

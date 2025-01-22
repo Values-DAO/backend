@@ -73,7 +73,8 @@ const cultureBookSchema = new Schema({
         hasPhoto: { type: Boolean, default: false },
         photoUrl: { type: String }, // IPFS Pinata URL
         photoFileId: { type: String }, // Telegram File ID to refetch the image when needed
-        status: { type: String, enum: ["pending", "approved", "rejected", "processing"] },
+        status: { type: String, enum: ["pending", "approved", "rejected", "processing"] }, // onchain status
+        rewardStatus: { type: String, enum: ["pending", "rewarded", "rejected", "processing"], default : "processing" }, // reward status
         votingEndsAt: { type: Date },
         pollId: { type: String },
       },
