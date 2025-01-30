@@ -14,8 +14,10 @@ export async function POST(req: Request) {
     const trustpools = await TrustPools.find({}).populate({
       path: "cultureBook",
       select: "value_aligned_posts",
-    })
-    
+    });
+
+    console.log("Length of trustpools: ", trustpools.length);
+
     if (!trustpools) {
       return NextResponse.json({
         status: 404,
@@ -23,28 +25,28 @@ export async function POST(req: Request) {
         message: "No trust pool found",
       });
     }
-    
+
     for (const trustpool of trustpools) {
       console.log("Processing trustpool: ", trustpool.name);
       if (!trustpool.cultureBook) {
-        return NextResponse.json({
-          status: 404,
-          error: "Culture Book not found",
-          message: "Culture Book not found",
-        });
+        console.log("No culture book data found for trustpool: ", trustpool.name);
+        continue;
       }
-      
+
       // don't consider the posts that have a votingEndsAt field cause that is to be decided by the poll
-      const value_aligned_posts = trustpool.cultureBook.value_aligned_posts.filter((post: ValueAlignedPost) => !post.onchain).filter((post: ValueAlignedPost) => post.eligibleForVoting).filter((post: ValueAlignedPost) => !post.votingEndsAt);
-        
+      const value_aligned_posts = trustpool.cultureBook.value_aligned_posts
+        .filter((post: ValueAlignedPost) => !post.onchain)
+        .filter((post: ValueAlignedPost) => post.eligibleForVoting)
+        .filter((post: ValueAlignedPost) => !post.votingEndsAt);
+
       for (const post of value_aligned_posts) {
         // first check if the post is eligible to be posted onchain
         if (post.votes.count < 0) {
           post.eligibleForVoting = false;
           console.log(`Post ${post._id} not eligible for voting. Skipping...`);
-          continue
+          continue;
         }
-        
+
         // now the message is eligible for posting onchain
         // need to avoid duplication, so if the post already exists onchain, skip it
         // onchain posts have onchain field set to true
@@ -52,14 +54,14 @@ export async function POST(req: Request) {
         const existingPost = trustpool.cultureBook.value_aligned_posts.find(
           (p: ValueAlignedPost) => p?.messageTgId && p?.messageTgId === post?.messageTgId && p.onchain
         );
-        
+
         if (existingPost) {
           post.onchain = false;
           post.eligibleForVoting = false;
           console.log(`Post ${post._id} already exists onchain. Skipping...`);
           continue;
         }
-        
+
         // now store it on ipfs and then onchain
         const response = await storeMessageOnIpfs(post.content);
 
@@ -69,7 +71,7 @@ export async function POST(req: Request) {
             status: 500,
             error: "Error storing message on IPFS. Please try again.",
             message: "Error storing message on IPFS. Please try again.",
-            });
+          });
         }
 
         const txHash = await storeMessageOnChain(response.IpfsHash);
@@ -78,19 +80,18 @@ export async function POST(req: Request) {
         post.ipfsHash = response.IpfsHash;
         post.onchain = true;
         post.eligibleForVoting = false;
-        
+
         console.log(`Post ${post._id} successfully posted onchain`);
       }
-        
+
       await trustpool.cultureBook.save();
       console.log(`Culture book data for trustpool ${trustpool.name} successfully updated`);
     }
-      
-      return NextResponse.json({
-        status: 200,
-        message: "Successfully posted culture book data onchain",
-      });
-    
+
+    return NextResponse.json({
+      status: 200,
+      message: "Successfully posted culture book data onchain",
+    });
   } catch (error) {
     console.error("Error posting culture book data onchain:", error);
     return NextResponse.json({
