@@ -70,6 +70,7 @@ Output Rules:
 Output Format:
 interface ValueAlignedPost {
   posterUsername: string;
+  posterTgId: string;
   content: string;
   timestamp: Date;
   title: string;
