@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     }));
 
     
-    let slicedMessages = messages.slice(-800, -600)
+    let slicedMessages = messages
     
     // return if no messages found
     if (slicedMessages.length === 0) {

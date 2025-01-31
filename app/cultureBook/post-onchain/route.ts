@@ -58,6 +58,7 @@ export async function POST(req: Request) {
         if (existingPost) {
           post.onchain = false;
           post.eligibleForVoting = false;
+          post.rewardStatus = "rejected";
           console.log(`Post ${post._id} already exists onchain. Skipping...`);
           continue;
         }
@@ -80,6 +81,7 @@ export async function POST(req: Request) {
         post.ipfsHash = response.IpfsHash;
         post.onchain = true;
         post.eligibleForVoting = false;
+        post.rewardStatus = "pending";
 
         console.log(`Post ${post._id} successfully posted onchain`);
       }
