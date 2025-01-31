@@ -2,7 +2,7 @@ import type { Message } from "@/models/cultureBotCommunity";
 import type { CoreValue, CultureBotMessage, SpectrumItem, UpdateCommunityValuesResponse } from "@/types";
 import OpenAI from "openai";
 
-export  const extractValueAlignedPosts = async ({
+export const extractValueAlignedPosts = async ({
   messages,
   spectrum,
 }: {
@@ -11,7 +11,7 @@ export  const extractValueAlignedPosts = async ({
 }): Promise<UpdateCommunityValuesResponse> => {
   const newMessages = JSON.stringify(messages);
   const newSpectrum = JSON.stringify(spectrum);
-  
+
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
@@ -89,6 +89,7 @@ Output Example:
   "value_aligned_posts": [
     {
       "posterUsername": "john_doe",
+      "posterTgId": "123456789",
       "content": "We had a fantastic podcast discussing our community's rituals and future goals. Join us next week!",
       "timestamp": "2024-05-12T10:30:00Z",
       "title": "Podcast on Rituals and Goals",
@@ -125,13 +126,13 @@ Your task:
         },
       ],
     });
-    
+
     let res: any = completion.choices[0].message.content?.replace("```json", "").replace("```", "");
 
     res = JSON.parse(res!);
-    
-    console.log(res)
-    
+
+    console.log(res);
+
     return {
       value_aligned_posts: res.value_aligned_posts,
     };

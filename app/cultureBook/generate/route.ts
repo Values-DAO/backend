@@ -72,6 +72,7 @@ export async function POST(req: Request) {
       senderUsername: message.senderUsername,
       createdAt: message.createdAt,
       messageTgId: message?.messageTgId,
+      posterTgId: message.senderTgId,
     }));
 
     
