@@ -119,7 +119,8 @@ export interface ValueAlignedPost {
   photoUrl?: string;
   photoFileId?: string;
   status?: string;
-  pollId?: string;
+  tgPollId?: string;
+  tgPollMessageId?: string;
 }
 
 export interface TopPoster {

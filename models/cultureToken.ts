@@ -34,6 +34,10 @@ const cultureTokenSchema = new Schema(
       type: String,
       required: true,
     },
+    poolConfigured: {
+      type: Boolean,
+      default: false
+    },
     allocationAddress: {
       type: [
         {

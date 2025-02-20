@@ -49,16 +49,14 @@ const cultureBookSchema = new Schema({
             count: { type: Number },
             alignedUsers: [
               {
-                type: {
-                  userId: { type: String, required: true },
-                },
+                userTgId: { type: String, required: true },
+                userTgUsername: { type: String, required: true },
               },
             ],
             notAlignedUsers: [
               {
-                type: {
-                  userId: { type: String, required: true },
-                },
+                userTgId: { type: String, required: true },
+                userTgUsername: { type: String, required: true },
               },
             ],
           },
@@ -74,9 +72,10 @@ const cultureBookSchema = new Schema({
         photoUrl: { type: String }, // IPFS Pinata URL
         photoFileId: { type: String }, // Telegram File ID to refetch the image when needed
         status: { type: String, enum: ["pending", "approved", "rejected", "processing"] }, // onchain status
-        rewardStatus: { type: String, enum: ["pending", "rewarded", "rejected", "processing"], default : "processing" }, // reward status
+        rewardStatus: { type: String, enum: ["pending", "rewarded", "rejected", "processing"], default: "processing" }, // reward status
         votingEndsAt: { type: Date },
-        pollId: { type: String },
+        tgPollId: { type: String },
+        tgPollMessageId: { type: String },
       },
       default: [],
     },
